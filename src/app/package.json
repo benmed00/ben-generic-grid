@@ -20,7 +20,6 @@
         "akveo"
     ],
     "peerDependencies": {
-        "@angular/animations": "^7.2.12",
         "@angular/common": "~7.2.0",
         "@angular/compiler": "~7.2.0",
         "@angular/core": "~7.2.0",
@@ -29,6 +28,7 @@
         "@angular/platform-browser-dynamic": "~7.2.0",
         "@angular/router": "~7.2.0",
         "rxjs": "~6.3.3",
+        "@angular/animations": "^7.2.12",
         "tslib": "^1.9.0",
         "zone.js": "~0.8.26",
         "core-js": "^2.5.4",
@@ -44,6 +44,13 @@
         "@angular/cdk": "^7.3.7"
     },
     "dependencies": {
+        "@angular/animations": "^7.2.12",
+        "tslib": "^1.9.0",
+        "zone.js": "~0.8.26",
+        "core-js": "^2.5.4",
+        "fsevents": "^1.2.8",
+        "@nebular/theme": "^3.4.2",
+        "@ng-bootstrap/ng-bootstrap": "^4.1.1",
         "eva-icons": "^1.1.1",
         "font-awesome": "^4.7.0",
         "nebular-icons": "^1.1.0",
@@ -53,8 +60,28 @@
         "@angular/cdk": "^7.3.7"
     },
     "ngPackage": {
+
+        "whitelistedNonPeerDependencies": [
+            "@angular/animations",
+            "tslib",
+            "zone.js",
+            "core-js",
+            "fsevents",
+            "@nebular/theme",
+            "@ng-bootstrap/ng-bootstrap",
+            "eva-icons",
+            "font-awesome",
+            "nebular-icons",
+            "ng2-completer",
+            "ng2-smart-table",
+            "rxjs-compat",
+            "@angular/cdk"
+        ],
         "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
         "lib": {
+            "styleIncludePaths": [
+                "./src/assets/scss"
+            ],
             "entryFile": "public_api.ts",
             "umdModuleIds": {
                 "@ngrx": "@ngrx",

@@ -1,0 +1,71 @@
+{
+  "name": "vinci-datagrid",
+  "version": "1.0.0",
+  "author": "Benyakoub Mohammed <mohammed.ben-yakoub@dxc.com>",
+  "license": "MIT",
+  "description": "Angular Librairie generique for vinci project",
+  "repository": {
+    "type": "git",
+    "url": "git+http://akveo.github.io/ng2-smart-table.git"
+  },
+  "bugs": {
+    "url": "http://akveo.github.io/ng2-smart-table/issues"
+  },
+  "homepage": "http://akveo.github.io/ng2-smart-table/#readme",
+  "keywords": [
+    "angular",
+    "typescript",
+    "table",
+    "akveo"
+  ],
+  "peerDependencies": {
+    "@angular/common": "~7.2.0",
+    "@angular/compiler": "~7.2.0",
+    "@angular/core": "~7.2.0",
+    "@angular/forms": "~7.2.0",
+    "@angular/platform-browser": "~7.2.0",
+    "@angular/platform-browser-dynamic": "~7.2.0",
+    "@angular/router": "~7.2.0",
+    "rxjs": "~6.3.3",
+    "@angular/animations": "^7.2.12",
+    "tslib": "^1.9.0",
+    "zone.js": "~0.8.26",
+    "core-js": "^2.5.4",
+    "fsevents": "^1.2.8",
+    "@nebular/theme": "^3.4.2",
+    "@ng-bootstrap/ng-bootstrap": "^4.1.1",
+    "eva-icons": "^1.1.1",
+    "font-awesome": "^4.7.0",
+    "nebular-icons": "^1.1.0",
+    "ng2-completer": "^2.0.8",
+    "ng2-smart-table": "^1.4.0",
+    "rxjs-compat": "^6.4.0",
+    "@angular/cdk": "^7.3.7"
+  },
+  "dependencies": {
+    "@angular/animations": "^7.2.12",
+    "tslib": "^1.9.0",
+    "zone.js": "~0.8.26",
+    "core-js": "^2.5.4",
+    "fsevents": "^1.2.8",
+    "@nebular/theme": "^3.4.2",
+    "@ng-bootstrap/ng-bootstrap": "^4.1.1",
+    "eva-icons": "^1.1.1",
+    "font-awesome": "^4.7.0",
+    "nebular-icons": "^1.1.0",
+    "ng2-completer": "^2.0.8",
+    "ng2-smart-table": "^1.4.0",
+    "rxjs-compat": "^6.4.0",
+    "@angular/cdk": "^7.3.7"
+  },
+  "main": "bundles/vinci-datagrid.umd.js",
+  "module": "fesm5/vinci-datagrid.js",
+  "es2015": "fesm2015/vinci-datagrid.js",
+  "esm5": "esm5/vinci-datagrid.js",
+  "esm2015": "esm2015/vinci-datagrid.js",
+  "fesm5": "fesm5/vinci-datagrid.js",
+  "fesm2015": "fesm2015/vinci-datagrid.js",
+  "typings": "vinci-datagrid.d.ts",
+  "metadata": "vinci-datagrid.metadata.json",
+  "sideEffects": false
+}
