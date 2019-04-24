@@ -1,11 +1,24 @@
 <nb-card>
     <nb-card-header>
-        Smart Table
+
+        VINCI DATA-GRID
+
+        <div class="search-input">
+            <button nbButton outline status="info">WORD</button>
+            <button nbButton status="success">EXCEL</button>
+            <button nbButton status="danger">PDF</button>
+        </div>
+
+
+
     </nb-card-header>
 
     <nb-card-body>
-        <ng2-smart-table [settings]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)">
+        <input #search class="search" type="text" placeholder="Search..." (keydown.enter)="onSearch(search.value)">
+        <ng2-smart-table [settings]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)" (editConfirm)="onSaveConfirm($event)" (createConfirm)="onCreateConfirm($event)">
         </ng2-smart-table>
+        <!-- <ng2-smart-table [settings]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)">
+        </ng2-smart-table> -->
     </nb-card-body>
 
 </nb-card>

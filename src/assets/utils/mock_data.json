@@ -1,0 +1,50 @@
+{
+    "add": {
+        "addButtonContent": "<i class='nb-plus'></i>",
+        "createButtonContent": "<i class='nb-checkmark'></i>",
+        "cancelButtonContent": "<i class='nb-close'></i>"
+    },
+    "edit": {
+        "editButtonContent": "<i class='nb-edit'></i>",
+        "saveButtonContent": "<i class='nb-checkmark'></i>",
+        "cancelButtonContent": "<i class='nb-close'></i>"
+    },
+    "delete": {
+        "deleteButtonContent": "<i class='nb-trash'></i>",
+        "confirmDelete": true
+    },
+    "selectMode": "multi",
+    "columns": {
+        "id": {
+            "title": "ID",
+            "type": "number",
+            "filtre": "false",
+            "filter": "false"
+        },
+        "firstName": {
+            "title": "First Name",
+            "type": "string",
+            "filter": "false"
+        },
+        "lastName": {
+            "title": "Last Name",
+            "type": "string",
+            "filter": "false"
+        },
+        "username": {
+            "title": "Username",
+            "type": "string",
+            "filter": "false"
+        },
+        "email": {
+            "title": "E-mail",
+            "type": "string",
+            "filter": "false"
+        },
+        "age": {
+            "title": "Age",
+            "type": "number",
+            "filter": "false"
+        }
+    }
+}

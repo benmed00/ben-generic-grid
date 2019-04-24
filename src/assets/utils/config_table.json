@@ -16,15 +16,36 @@
     "columns": {
         "id": {
             "title": "ID",
-            "type": "number"
+            "type": "number",
+            "editable": "false"
         },
         "firstName": {
             "title": "First Name",
-            "type": "string"
+            "type": "string",
+            "filter": {
+                "type": "list",
+                "config": {
+                    "selectText": "Select...",
+                    "list": [{
+                            "value": "jacob",
+                            "title": "jacob"
+                        },
+                        {
+                            "value": "hcglwjlwcgwwcgwcwj",
+                            "title": "hcglwjlwcgwwcgwcwj"
+                        },
+                        {
+                            "value": "Med",
+                            "title": "Med"
+                        }
+                    ]
+                }
+            }
         },
         "lastName": {
             "title": "Last Name",
-            "type": "string"
+            "type": "custom",
+            "renderComponent": "CustomRenderComponent"
         },
         "username": {
             "title": "Username",
@@ -32,11 +53,83 @@
         },
         "email": {
             "title": "E-mail",
-            "type": "string"
+            "type": "string",
+            "filter": {
+                "type": "completer",
+                "config": {
+                    "completer": {
+                        "data": "this.source",
+                        "searchFields": "completer",
+                        "titleField": "email"
+                    }
+                }
+            }
         },
         "age": {
-            "title": "Age",
-            "type": "number"
+            "title": "Date",
+            "type": "Date",
+            "editor": {
+                "type": "list",
+                "config": {
+                    "selectText": "Select...",
+                    "list": [{
+                            "value": "jacob",
+                            "title": "jacob"
+                        },
+                        {
+                            "value": "hcglwjlwcgwwcgwcwj",
+                            "title": "hcglwjlwcgwwcgwcwj"
+                        },
+                        {
+                            "value": "Med",
+                            "title": "Med"
+                        },
+                        {
+                            "value": "Med",
+                            "title": "Med"
+                        },
+                        {
+                            "value": "Med",
+                            "title": "Med"
+                        },
+                        {
+                            "value": "Med",
+                            "title": "Med"
+                        },
+                        {
+                            "value": "Med",
+                            "title": "Med"
+                        },
+                        {
+                            "value": "Med",
+                            "title": "Med"
+                        },
+                        {
+                            "value": "Med",
+                            "title": "Med"
+                        },
+                        {
+                            "value": "Med",
+                            "title": "Med"
+                        },
+                        {
+                            "value": "Med",
+                            "title": "Med"
+                        }
+                    ]
+                }
+            }
+        },
+        "passed": {
+            "title": "Passed",
+            "filter": {
+                "type": "checkbox",
+                "config": {
+                    "true": "Yes",
+                    "false": "No",
+                    "resetText": "clear"
+                }
+            }
         }
     }
 }

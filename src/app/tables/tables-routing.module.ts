@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { TablesComponent } from './tables.component';
 import { SmartTableComponent } from './smart-table/smart-table.component';
+import { CustomRenderComponent } from './smart-table/custom-render.component';
 
 const routes: Routes = [
   {
@@ -24,6 +25,7 @@ const routes: Routes = [
 export class TablesRoutingModule { }
 
 export const routedComponents = [
-  TablesComponent,
-  SmartTableComponent,
-];
+         TablesComponent,
+         SmartTableComponent
+
+       ];
