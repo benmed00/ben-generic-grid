@@ -44,12 +44,11 @@
         },
         "lastName": {
             "title": "Last Name",
-            "type": "custom",
-            "renderComponent": "CustomRenderComponent"
+            "type": "string"
         },
         "username": {
             "title": "Username",
-            "type": "string"
+            "type": "html"
         },
         "email": {
             "title": "E-mail",
@@ -81,40 +80,40 @@
                             "title": "hcglwjlwcgwwcgwcwj"
                         },
                         {
-                            "value": "Med",
-                            "title": "Med"
+                            "value": "Yassin",
+                            "title": "Yassin"
+                        },
+                        {
+                            "value": "Yass",
+                            "title": "Yass"
+                        },
+                        {
+                            "value": "Ann",
+                            "title": "Ann"
+                        },
+                        {
+                            "value": "TOTO",
+                            "title": "TOTO"
                         },
                         {
                             "value": "Med",
                             "title": "Med"
                         },
                         {
-                            "value": "Med",
-                            "title": "Med"
+                            "value": "BEn",
+                            "title": "BEn"
                         },
                         {
-                            "value": "Med",
-                            "title": "Med"
+                            "value": "mohammed benyakoub",
+                            "title": "mohammed benyakoub"
                         },
                         {
-                            "value": "Med",
-                            "title": "Med"
+                            "value": "SELLAMI",
+                            "title": "SELLAMI"
                         },
                         {
-                            "value": "Med",
-                            "title": "Med"
-                        },
-                        {
-                            "value": "Med",
-                            "title": "Med"
-                        },
-                        {
-                            "value": "Med",
-                            "title": "Med"
-                        },
-                        {
-                            "value": "Med",
-                            "title": "Med"
+                            "value": "talaL",
+                            "title": "talaL"
                         }
                     ]
                 }

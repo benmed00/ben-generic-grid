@@ -63,7 +63,8 @@ export const DATA_Table: TableDateInterface[] = [
            id: 1,
            firstName: "Mark",
            lastName: "OTTOO",
-           username: '<a href="https://github.com/akveo/ng2-admin">Ng2 Admin</a>',
+           username:
+             '<a href="https://github.com/akveo/ng2-admin">Ng2 Admin</a>',
            email: "mdo@gmail.com",
            age: "28",
            passed: "Yes"
@@ -72,7 +73,7 @@ export const DATA_Table: TableDateInterface[] = [
            id: 2,
            firstName: "Jacob",
            lastName: "Thornton",
-           username: "@fat",
+           username:'<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/DXC_Tech.png/280px-DXC_Tech.png" alt="Smiley face" height="42" idth="42">',
            email: "fat@yandex.ru",
            age: "45",
            passed: "Yes"

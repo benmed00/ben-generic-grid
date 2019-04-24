@@ -52,9 +52,10 @@ export class SmartTableComponent implements OnInit, OnDestroy {
 
     this.service.getSetting().subscribe((res: any) => {
 
-      res.columns.lastName.renderComponent = this.componentFactoryResolver.resolveComponentFactory(
-        res.columns.lastName.renderComponent
-      );
+      // res.columns.lastName.renderComponent = this.componentFactoryResolver.resolveComponentFactory(
+      //   res.columns.lastName.renderComponent
+      // );
+
       this.settings = res;
       console.log("setting : " + JSON.stringify(res));
       console.log("Type of setting : " + typeof res);
