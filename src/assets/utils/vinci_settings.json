@@ -1,0 +1,172 @@
+{
+  "add": {
+    "addButtonContent": "<i class='nb-plus'></i>",
+    "createButtonContent": "<i class='nb-checkmark'></i>",
+    "cancelButtonContent": "<i class='nb-close'></i>",
+    "confirmCreate": "true"
+  },
+  "edit": {
+    "editButtonContent": "<i class='nb-edit'></i>",
+    "saveButtonContent": "<i class='nb-checkmark'></i>",
+    "cancelButtonContent": "<i class='nb-close'></i>",
+    "confirmSave": "true"
+  },
+  "delete": {
+    "deleteButtonContent": "<i class='nb-trash'></i>",
+    "confirmDelete": "true"
+  },
+  "selectMode": "multi",
+  "columns": {
+    "id": {
+      "title": "ID VINCI",
+      "editable": "false",
+      "addable": "false",
+      "type": "number",
+      "notShownField": "true",
+      "hideHeader": "true",
+      "order": 0,
+      "filter": false
+    },
+    "nom": {
+      "title": "Nom",
+      "type": "string",
+      "filter": {
+        "type": "list",
+        "config": {
+          "selectText": "Select...",
+          "list": [{
+            "value": "jacob",
+            "title": "jacob"
+          }, {
+            "value": "hcglwjlwcgwwcgwcwj",
+            "title": "hcglwjlwcgwwcgwcwj"
+          }, {
+            "value": "Med",
+            "title": "Med"
+          }]
+        }
+      },
+      "notShownField": "false",
+      "order": 1
+    },
+    "prenom": {
+      "title": "Prénom",
+      "type": "html",
+      "order": 2,
+      "filter": false
+    },
+    "societe": {
+      "title": "Société",
+      "type": "string",
+      "order": 3,
+      "filter": false
+    },
+    "fonctionOfficiel": {
+      "title": "Fonction officiel",
+      "type": "html",
+      "filter": {
+        "type": "completer",
+        "config": {
+          "completer": {
+            "data": "this.source",
+            "searchFields": "completer",
+            "titleField": "email"
+          }
+        }
+      },
+      "editor": {
+        "type": "text",
+        "value": "<input type='email'>"
+      },
+      "order": 4
+    },
+    "affectation": {
+      "title": "Affectation",
+      "type": "html",
+      "editor": {
+        "type": "list",
+        "config": {
+          "selectText": "Select...",
+          "list": [{
+            "value": "jacob",
+            "title": "jacob"
+          }, {
+            "value": "hcglwjlwcgwwcgwcwj",
+            "title": "hcglwjlwcgwwcgwcwj"
+          }, {
+            "value": "Yassin",
+            "title": "Yassin"
+          }, {
+            "value": "Yass",
+            "title": "Yass"
+          }, {
+            "value": "Ann",
+            "title": "Ann"
+          }, {
+            "value": "TOTO",
+            "title": "TOTO"
+          }, {
+            "value": "Med",
+            "title": "Med"
+          }, {
+            "value": "BEn",
+            "title": "BEn"
+          }, {
+            "value": "mohammed benyakoub",
+            "title": "mohammed benyakoub"
+          }, {
+            "value": "SELLAMI",
+            "title": "SELLAMI"
+          }, {
+            "value": "talaL",
+            "title": "talaL"
+          }, {
+            "value": "<b>Samantha</b>",
+            "title": "Samantha"
+          }]
+        }
+      },
+      "order": 5,
+      "filter": false
+    },
+    "periodeAffectation": {
+      "title": "Période d'affectation",
+      "filter": {
+        "type": "checkbox",
+        "config": {
+          "true": "Yes",
+          "false": "No",
+          "resetText": "clear"
+        }
+      },
+      "order": 6
+    },
+    "fonctionOperationnel": {
+      "title": "Fonction opérationnel",
+      "editable": "false",
+      "order": 7,
+      "filter": false
+    },
+    "statut": {
+      "title": "Statut",
+      "editable": "true",
+      "filter": {
+        "type": "list",
+        "config": {
+          "selectText": "tout afficher",
+          "list": [{
+            "value": "actif",
+            "title": "Actif"
+          }, {
+            "value": "inactif",
+            "title": "Inactif"
+          }, {
+            "value": "sorti",
+            "title": "Sorti"
+          }]
+        }
+      },
+      "order": 8
+    }
+  }
+}

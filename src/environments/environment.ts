@@ -4,7 +4,7 @@
 
 export const environment = {
          production: false,
-         apiUrl: "http://localhost:4200"
+         apiUrl: "https://github.dxc.com/mbenyakoub/Generique-DataGrid/blob/master/src/assets/utils"
        };
 
 /*

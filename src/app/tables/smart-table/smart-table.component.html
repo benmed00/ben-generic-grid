@@ -1,24 +1,93 @@
 <nb-card>
-    <nb-card-header>
 
-        VINCI DATA-GRID
+  <nb-card-header>
 
-        <div class="search-input">
-            <button nbButton outline status="info">WORD</button>
-            <button nbButton status="success">EXCEL</button>
-            <button nbButton status="danger">PDF</button>
-        </div>
+    <nb-card>
+      <h1> Generic Data-Grid <br></h1>
+    </nb-card>
 
+    <!-- {{ settingsOrigine | json }} -->
 
+    <nb-card>
+      <div class="search-input">
 
-    </nb-card-header>
+        <button nbButton status="success">EXCEL</button>
+        <button nbButton status="danger">PDF</button>
 
-    <nb-card-body>
-        <input #search class="search" type="text" placeholder="Search..." (keydown.enter)="onSearch(search.value)">
-        <ng2-smart-table [settings]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)" (editConfirm)="onSaveConfirm($event)" (createConfirm)="onCreateConfirm($event)">
-        </ng2-smart-table>
-        <!-- <ng2-smart-table [settings]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)">
-        </ng2-smart-table> -->
-    </nb-card-body>
+      </div>
+    </nb-card>
+
+    <div class="vc-accordion">
+
+      <nb-accordion multi>
+        <nb-accordion-item>
+          <nb-accordion-item-header>
+            Mes Preferences
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+
+            <nb-card>
+              <nb-card-header>Selection Colonnes</nb-card-header>
+              <nb-card-body>
+                <nb-select cdkDropList multiple placeholder="Multiple Select" class="columns-selection"
+                  (selectedChange)="selectColomns($event)" [(selected)]="selectedItem" shape="round" size="small">
+                  <nb-select-label>
+                    Selectioner les colonnes à afficher
+                  </nb-select-label>
+                  <nb-option *ngFor="let col of columns | keyvalue" value="{{col.key}}">
+                    {{col.value.title}}
+                  </nb-option>
+                  <!-- <nb-option *ngFor="let col of columnsArrayOfObjects" value="{{col.key}}">
+                    {{col.title}}
+                  </nb-option> -->
+                </nb-select>
+              </nb-card-body>
+            </nb-card>
+
+            <nb-card>
+              <nb-card-header>Trie des colonnes</nb-card-header>
+              <nb-card-body>
+                <div cdkDropList cdkDropListOrientation="horizontal" class="example-list"
+                  (cdkDropListDropped)="drop($event)">
+                  <div class="example-box" *ngFor="let item of columnsArrayOfObjects" cdkDrag>{{item.title}}</div>
+                </div>
+              </nb-card-body>
+            </nb-card>
+
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+
+        <!-- <nb-accordion-item>
+              <nb-accordion-item-header>
+                Trie des colonnes
+              </nb-accordion-item-header>
+              <nb-accordion-item-body>
+                <div cdkDropList cdkDropListOrientation="horizontal" class="example-list"
+                  (cdkDropListDropped)="drop($event)">
+                  <div class="example-box" *ngFor="let item of columnsArrayOfObjects" cdkDrag>{{item.title}}</div>
+                </div>
+              </nb-accordion-item-body>
+            </nb-accordion-item> -->
+
+      </nb-accordion>
+
+    </div>
+
+    <!-- <button nbButton outline status="primary" (click)="hideColomnId()">iddd</button> -->
+
+  </nb-card-header>
+
+  <nb-card-body>
+
+    <nb-card>
+      <input type="text" nbInput fieldSize="large" #search class="search" placeholder="Search..."
+        (keydown.enter)="onSearch(search.value)">
+    </nb-card>
+
+    <ng2-smart-table [(settings)]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)"
+      (editConfirm)="onSaveConfirm($event)" (createConfirm)="onCreateConfirm($event)">
+    </ng2-smart-table>
+
+  </nb-card-body>
 
 </nb-card>

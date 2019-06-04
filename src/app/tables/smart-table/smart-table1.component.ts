@@ -1,0 +1,155 @@
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Input,
+  ComponentFactoryResolver
+} from "@angular/core";
+import { LocalDataSource } from "ng2-smart-table";
+
+import { CustomRenderComponent } from "./custom-render.component";
+
+import { SmartTableData, SmartTableService } from "../smart-table.service";
+import { BehaviorSubject, Observable } from "rxjs";
+import { log } from "util";
+
+import { CONFIG_SETTINGS } from "assets/utils/settings";
+
+@Component({
+  selector: "app-smart-table",
+  templateUrl: "./smart-table.component.html",
+  styles: [
+    `
+      nb-card {
+        transform: translate3d(0, 0, 0);
+      }
+      .search-input {
+        margin-bottom: 1rem;
+        margin-right: 1rem;
+        float: right;
+      }
+
+      button {
+        margin: 1rem;
+        margin-right: 1rem;
+      }
+    `
+  ]
+})
+export class SmartTableComponent implements OnInit, OnDestroy {
+  @Input() config;
+  @Input() data;
+
+  source: LocalDataSource = new LocalDataSource();
+
+  setting: Observable<any>;
+  settings: any;
+
+  constructor(
+    private service: SmartTableService,
+    private componentFactoryResolver: ComponentFactoryResolver
+  ) {}
+
+  ngOnInit(): void {
+    // this.settings = this.service.getSettings();
+    // this.settings = this.service.etSetting();
+    // console.log("settings : " + JSON.stringify(this.settings));
+
+    //  this.settings = this.service.getSettings();
+    // console.log("setting : " + this.setting);
+    let data = this.service.getData();
+    this.source.load(data);
+
+    this.settings = CONFIG_SETTINGS;
+    console.log("Type of setting : " + typeof this.settings);
+
+    // this.service.getSetting().subscribe((res: any) => {
+
+    //   // res.columns.lastName.renderComponent = this.componentFactoryResolver.resolveComponentFactory(
+    //   //   res.columns.lastName.renderComponent
+    //   // );
+
+    //   this.settings = res;
+    //   console.log("setting : " + JSON.stringify(res));
+    //   console.log("Type of setting : " + typeof res);
+    // });
+  }
+
+  // test for hiding a column here the Id column, by reading and writing on the settings variable
+  hideColomnId(): void {
+    this.settings.columns.id.title = "iddddd";
+    // console.log("SETTINGS" + JSON.stringify(this.settings));
+    this.source.refresh();
+    console.log("APPEL FUNCTION hideColumnId() ");
+        // console.log("this.ng2smart.settings " + this.ng2smart.settings);
+
+    // this.source.refresh();
+  }
+
+  onSearch(query: string = "") {
+    this.source.setFilter(
+      [
+        // fields we want to inclue in the search
+        {
+          field: "columnKey",
+          search: query
+        }
+        // {
+        //   field: "firstName",
+        //   search: query
+        // },
+        // {
+        //   field: "lastName",
+        //   search: query
+        // },
+        // {
+        //   field: "username",
+        //   search: query
+        // },
+        // {
+        //   field: "email",
+        //   search: query
+        // },
+        // {
+        //   field: "age",
+        //   search: query
+        // }
+      ],
+      false, //andOperator
+      true //doEmit
+    );
+    // second parameter specifying whether to perform 'AND' or 'OR' search
+    // (meaning all columns should contain search query or at least one)
+    // 'AND' by default, so changing to 'OR' by setting false here
+  }
+
+  onDeleteConfirm(event): void {
+    if (window.confirm("Are you sure you want to delete?")) {
+      event.confirm.resolve();
+    } else {
+      event.confirm.reject();
+    }
+  }
+
+  onSaveConfirm(event) {
+    if (window.confirm("Are you sure you want to save?")) {
+      event.newData["name"] += " + added in code";
+      event.confirm.resolve(event.newData);
+    } else {
+      event.confirm.reject();
+    }
+  }
+
+  onCreateConfirm(event) {
+    if (window.confirm("Are you sure you want to create?")) {
+      event.newData["name"] += " + added in code";
+      event.confirm.resolve(event.newData);
+    } else {
+      event.confirm.reject();
+    }
+  }
+
+  ngOnDestroy(): void {
+    console.log("settings : " + JSON.stringify(this.settings));
+  }
+}
