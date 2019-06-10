@@ -2,11 +2,11 @@
 
   <nb-card-header>
 
-    <nb-card>
+    <!-- <nb-card>
       <h1> Generic Data-Grid <br></h1>
     </nb-card>
 
-    <!-- {{ settingsOrigine | json }} -->
+   {{ settingsOrigine | json }}
 
     <nb-card>
       <div class="search-input">
@@ -15,7 +15,7 @@
         <button nbButton status="danger">PDF</button>
 
       </div>
-    </nb-card>
+    </nb-card> -->
 
     <div class="vc-accordion">
 
@@ -80,8 +80,8 @@
   <nb-card-body>
 
     <nb-card>
-      <input type="text" nbInput fieldSize="large" #search class="search" placeholder="Search..."
-        (keydown.enter)="onSearch(search.value)">
+      <!-- <input type="text" nbInput fieldSize="large" #search class="search" placeholder="Search..."
+        (keydown.enter)="onSearch(search.value)"> -->
     </nb-card>
 
     <ng2-smart-table [(settings)]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)"
@@ -91,3 +91,5 @@
   </nb-card-body>
 
 </nb-card>
+
+

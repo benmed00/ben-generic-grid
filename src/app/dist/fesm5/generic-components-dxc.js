@@ -1,10 +1,10 @@
 import { __decorate, __extends, __metadata, __spread } from 'tslib';
 import { Component, defineInjectable, inject, Injectable, Input, ViewChild, ComponentFactoryResolver, NgModule } from '@angular/core';
-import { ServerDataSource, Ng2SmartTableModule } from 'ng2-smart-table';
+import { LocalDataSource, Ng2SmartTableModule } from 'ng2-smart-table';
 import { NbCardModule, NbButtonModule, NbThemeModule, NbLayoutModule, NbSelectModule, NbCheckboxModule, NbAccordionModule } from '@nebular/theme';
 import { RouterModule } from '@angular/router';
 import { moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
-import { HttpClient } from '@angular/common/http';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -44,6 +44,7 @@ var SmartTableService = /** @class */ (function (_super) {
         _this._url1 = "assets/utils/settings.ts";
         _this._url2 = "https://raw.githubusercontent.com/benmed00/vinci-settings/master/vinci_settings.json";
         _this._url3 = "http://localhost:3000";
+        _this._url4 = "http://192.168.8.52:9097/api/ui/preference/savePreference";
         // apiUrl = environment.apiUrl;
         _this.apiUrl = "https://github.dxc.com/mbenyakoub/Generique-DataGrid/blob/master/src/assets/utils";
         return _this;
@@ -51,6 +52,13 @@ var SmartTableService = /** @class */ (function (_super) {
     SmartTableService.prototype.getData = function () {
         // return DATA_Table;
         return DATA_Grid;
+    };
+    SmartTableService.prototype.getdata = function () {
+        return this._http.get(this._url3 + "/data");
+    };
+    SmartTableService.prototype.getSettingsFromNodeBckend = function () {
+        return this._http.get("http://localhost:3000/settings");
+        // .pipe(catchError(this.handleError));
     };
     SmartTableService.prototype.getDataFromBackend = function () {
         console.log(" Get Data Service ");
@@ -68,20 +76,18 @@ var SmartTableService = /** @class */ (function (_super) {
     SmartTableService.prototype.editDataFromBackend = function (settings) {
         return this._http.post(this._url0, settings);
     };
-    SmartTableService.prototype.deleteDataFromBackend = function () {
-    };
-    SmartTableService.prototype.addDataFromBackend = function () {
-    };
+    SmartTableService.prototype.deleteDataFromBackend = function () { };
+    SmartTableService.prototype.addDataFromBackend = function () { };
     SmartTableService.prototype.getSettings = function () {
         // return CONFIG_SETTINGS;
         return CONFIG_OBJECT_VINCI;
+        // return this._http.get(this._url3 + "/settings");
     };
     SmartTableService.prototype.updateColumns = function (columns) {
         console.log(" ==> UPDATE COLUMNS ==> ");
         CONFIG_OBJECT_VINCI.columns = columns;
     };
-    SmartTableService.prototype.savePreferences = function () {
-    };
+    SmartTableService.prototype.savePreferences = function () { };
     // getLifeCycleTable(): Observable<[MobileItem]> {
     // return of(DataMobileListItem).pipe(delay(4000));
     // }
@@ -91,7 +97,10 @@ var SmartTableService = /** @class */ (function (_super) {
     // }
     SmartTableService.prototype.getSetting = function () { };
     SmartTableService.prototype.getVinciSetting = function () {
-        return this._http.get(this._url0);
+        console.log(" getVinciSetting() : ");
+        return this._http
+            .get(this._url3 + "/settings")
+            .pipe(catchError(this.handleError));
         // return JSON.stringify(this._url);
         // return this._http.get<any[]>(this._url);
         // return this._http.get(this._url).pipe(map((res: any) => res));
@@ -101,19 +110,44 @@ var SmartTableService = /** @class */ (function (_super) {
         // return this.http.put("https://raw.githubusercontent.com/benmed00/vinci-settings/master/vinci_settings.json", settings);
         // CONFIG_OBJECT_VINCI.unshift() = settings;
     };
+    SmartTableService.prototype.updatePreferences = function (preference) {
+        console.log(" Update preference service: ");
+        var headers1 = new HttpHeaders();
+        headers1.append('Content-Type', 'application/json').append('accept', '*/*');
+        // headers1 = headers.set('Content-Type', 'application/json; charset=utf-8').set('accept', '*/*; charset=utf-8');
+        // const headers2 = new HttpHeaders({'Content-Type': 'application/json' ,'accept': '*/*'});
+        return this._http
+            // .put(this._url4, preference, { headers: new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8').set(accept, '*/*; charset=utf-8')})
+            .put(this._url4, preference, { headers: headers1 })
+            .subscribe({
+            next: function (data) {
+                console.log("after preference update: ", data);
+            },
+            error: function (err) {
+                if (err.error instanceof Error) {
+                    console.log('Client-side error occured.');
+                }
+                else {
+                    console.log('Server-side error occured.');
+                }
+            }
+        });
+        // .pipe(catchError(this.handleError));
+    };
     SmartTableService.prototype.getSettingsFromGitHub = function () {
-        return this._http.get(this.apiUrl + '/settings.ts').pipe(catchError(this.handleError));
+        return this._http
+            .get(this.apiUrl + "/settings.ts")
+            .pipe(catchError(this.handleError));
     };
     SmartTableService.prototype.updateData = function () {
         return DATA_Table;
     };
     SmartTableService.prototype.updateSettings = function (settings) {
-        console.log(" Update Settings Service ");
-        console.log("Settings to sauvgard : ", settings);
-        return this._http.post("http://localhost:3000", settings)
-            .subscribe({
+        // console.log(" Update Settings Service ");
+        console.log("SERVICE send Settings : ", settings.columns);
+        return this._http.post("http://localhost:3000", settings).subscribe({
             next: function (data) {
-                console.log("data retourned from the backend : ", data);
+                // console.log("data retourned from the backend : ", data);
             },
             error: this.handleError
         });
@@ -128,7 +162,7 @@ var SmartTableService = /** @class */ (function (_super) {
     SmartTableService.prototype.handleError = function (error) {
         if (error.error instanceof ErrorEvent) {
             // A client-side or network error occurred. Handle it accordingly.
-            console.error('An error occurred:', error.error.message);
+            console.error("An error occurred:", error.error.message);
         }
         else {
             // The backend returned an unsuccessful response code.
@@ -136,17 +170,24 @@ var SmartTableService = /** @class */ (function (_super) {
             console.error("Backend returned code " + error.status + ", body was: " + error.error);
         }
         // return an observable with a user-facing error message
-        return throwError('Something bad happened; please try again later.');
+        return throwError("Something bad happened; please try again later.");
     };
     SmartTableService.ngInjectableDef = defineInjectable({ factory: function SmartTableService_Factory() { return new SmartTableService(inject(HttpClient)); }, token: SmartTableService, providedIn: "root" });
     SmartTableService = __decorate([
         Injectable({
-            providedIn: 'root'
+            providedIn: "root"
         }),
         __metadata("design:paramtypes", [HttpClient])
     ], SmartTableService);
     return SmartTableService;
 }(SmartTableData));
+var Preferences;
+(function (Preferences) {
+    Preferences[Preferences["PREF_ORDER"] = 0] = "PREF_ORDER";
+    Preferences[Preferences["PREF_SORT"] = 1] = "PREF_SORT";
+    Preferences[Preferences["PREF_FILTER"] = 2] = "PREF_FILTER";
+    Preferences[Preferences["PREF_VISIBILITY"] = 3] = "PREF_VISIBILITY"; // string
+})(Preferences || (Preferences = {}));
 var DATA_Grid = [
     {
         id: 123456,
@@ -260,62 +301,67 @@ var DATA_Grid = [
     }
 ];
 var CONFIG_OBJECT_VINCI = {
-    add: {
-        addButtonContent: "<i class='nb-plus'></i>",
-        createButtonContent: "<i class='nb-checkmark'></i>",
-        cancelButtonContent: "<i class='nb-close'></i>",
-        confirmCreate: "true"
-    },
-    edit: {
-        editButtonContent: "<i class='nb-edit'></i>",
-        saveButtonContent: "<i class='nb-checkmark'></i>",
-        cancelButtonContent: "<i class='nb-close'></i>",
-        confirmSave: "true"
-    },
-    delete: {
-        deleteButtonContent: "<i class='nb-trash'></i>",
-        confirmDelete: "true"
-    },
-    selectMode: "multi",
+    // hideHeader: false,
+    // add: {
+    //   addButtonContent: "<i class='nb-plus'></i>",
+    //   createButtonContent: "<i class='nb-checkmark'></i>",
+    //   cancelButtonContent: "<i class='nb-close'></i>",
+    //   confirmCreate: "true"
+    // },
+    // edit: {
+    //   editButtonContent: "<i class='nb-edit'></i>",
+    //   saveButtonContent: "<i class='nb-checkmark'></i>",
+    //   cancelButtonContent: "<i class='nb-close'></i>",
+    //   confirmSave: "true"
+    // },
+    // delete: {
+    //   deleteButtonContent: "<i class='nb-trash'></i>",
+    //   confirmDelete: "true"
+    // },
+    // selectMode: "multi",
     columns: {
         id: {
             title: "ID VINCI",
             editable: "false",
             addable: "false",
             type: "number",
-            notShownField: "true",
+            display: "false",
             hideHeader: "true",
             order: 0,
-            filter: false
+            filter: true
         },
         nom: {
             title: "Nom",
             type: "string",
-            filter: false,
+            filter: true,
             notShownField: "false",
             order: 1,
+            display: "true"
         },
         prenom: {
             title: "Prénom",
             type: "html",
             order: 2,
-            filter: false
+            filter: true,
+            display: "false"
         },
         societe: {
             title: "Société",
             type: "string",
             order: 3,
-            filter: false
+            filter: true,
+            display: "true"
         },
         fonctionOfficiel: {
             title: "Fonction officiel",
             type: "html",
-            filter: false,
+            filter: true,
             editor: {
                 type: "text",
                 value: "<input  type='email'>"
             },
             order: 4,
+            display: "true"
         },
         affectation: {
             title: "Affectation",
@@ -377,12 +423,14 @@ var CONFIG_OBJECT_VINCI = {
                 }
             },
             order: 5,
-            filter: false
+            filter: true,
+            display: "true"
         },
         periodeAffectation: {
             title: "Période d'affectation",
             filter: false,
             order: 6,
+            display: "true"
         },
         fonctionOperationnel: {
             title: "Fonction opérationnel",
@@ -395,6 +443,7 @@ var CONFIG_OBJECT_VINCI = {
             editable: "true",
             filter: false,
             order: 8,
+            display: "true"
         }
     }
 };
@@ -1054,62 +1103,124 @@ var SmartTableComponent = /** @class */ (function () {
     function SmartTableComponent(service, componentFactoryResolver, http) {
         this.service = service;
         this.componentFactoryResolver = componentFactoryResolver;
-        this.config = {};
         this.titlesArray = [];
         this.columnsArrayOfObjects = [];
         this.panelOpenState = false;
-        this.settings = Object.assign({}, this.service.getSettings());
-        this.source = new ServerDataSource(http, { endPoint: 'datafromServer' });
-        // this.source = new ServerDataSource(http, { endPoint: 'http://localhost:3000/data' });
+        // source: ServerDataSource;
+        this.source = new LocalDataSource();
+        // this.settingsOrigine = Object.assign({}, this.service.getSettings());
+        // console.log(" Original Setttings : ", this.settingsOrigine);
+        // this.columnnToDisplay = Object.keys(this.settingsOrigine.columns)
+        //   .filter(key => this.settingsOrigine.columns[key].display !== "false")
+        //   .reduce((newColumns, column) => {
+        //     newColumns[column] = this.settingsOrigine.columns[column];
+        //     // console.log("after reduce : ", newColumns);
+        //     return newColumns;
+        //   }, {});
+        // this.settingsOrigine = Object.assign({}, res);
+        // tester pour le parametre "display"
+        // console.log("columnn To Display : ", this.columnnToDisplay);
+        // this.source = new ServerDataSource(http, { endPoint: 'datafromServer' }); // datafromServer : URL where the Settings object will be provided
+        // this.source = new ServerDataSource(http, {
+        //   endPoint: "http://localhost:3000/data"
+        // });
         // this.sourceServer = this.datafromServer;
     }
     SmartTableComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        /* GETTING DATA *****************************************/
+        this.source = new LocalDataSource();
+        this.data = this.datafromServer;
+        // this.data = this.service.getData();
+        // this.service.getdata().subscribe(data => {
+        //   this.source.load(data);
+        // });
+        // console.log(" Data From Local : ", this.data);
+        this.source.load(this.data);
+        /* *****************************************************/
+        // this.service.getSettingsFromNodeBckend().subscribe(settings => {
+        // this.settingsOrigine = Object.assign({}, settings);
+        this.settingsOrigine = this.config; // recuperer comme input
+        // this.settingsOrigine = settings;
+        // this.settings = settings; // for direct asignement
+        if (this.settingsOrigine) {
+            // For resolvingg undefind probleme
+            console.log(" Settings From backend : ", this.settingsOrigine);
+            this.columnnToDisplay = Object.keys(this.settingsOrigine.columns)
+                .filter(function (key) { return _this.settingsOrigine.columns[key].display !== "false"; })
+                .reduce(function (newColumns, column) {
+                newColumns[column] = _this.settingsOrigine.columns[column];
+                return newColumns;
+            }, {});
+            this.settings = Object.assign({}, this.settingsOrigine, {
+                columns: this.columnnToDisplay
+            });
+            this.columns = Object.assign({}, this.settingsOrigine.columns);
+            this.selectedItem = Object.keys(this.columnnToDisplay);
+            this.titlesArray = Array.from(Object.keys(this.settings.columns), function (k) { return _this.settings.columns[k].title; });
+            this.selectedItem.forEach(function (element) {
+                _this.columnsArrayOfObjects.push({
+                    key: element,
+                    title: _this.settingsOrigine.columns[element].title
+                });
+            });
+        }
+        // }); // fin of subscribe
+        if (this.settingsOrigine) {
+            // For resolvingg undefind probleme
+            console.log(" Settings From backend : ", this.settingsOrigine);
+        }
         // this.settings = this.service.getSettings(); // recevoir une instance direct de l'objet settings
         // this.service.getVinciSetting().subscribe(settings => {
         //   console.log("SETTINGS : ", settings);
         // this.vinciSettings = JSON.parse(JSON.stringify(settings));
         // this.settings = settings;
         // });
-        var _this = this;
         // this.data = this.service.getData();
+        // console.log(" DATA : ", this.data);
+        // this.source.load(this.data);
         /* Avoir les données depuis le service */
         // this.service.getDataFromBackend().subscribe(data => {
         //   // this.data = [data];
         //   this.source.load(data);
         //   console.log("data retourned from the backend : ", data);
         // });
-        // console.log(" DATA : ", this.data);
-        // this.source.load(this.data);
-        this.columns = Object.assign({}, this.settings.columns);
-        this.selectedItem = Object.keys(this.columns);
-        this.titlesArray = Array.from(Object.keys(this.columns), function (k) { return _this.columns[k].title; });
-        this.selectedItem.forEach(function (element) {
-            _this.columnsArrayOfObjects.push({
-                key: element,
-                title: _this.columns[element].title
-            });
-        });
-        // console.log("columnsArrayOfObjects", this.columnsArrayOfObjects);
+        // for (const key in this.settings.columns) {
+        //   // console.log(" this.settings.columns." + key + ".display = ", this.settings.columns[key].display);
+        //   if (this.settings.columns[key].display === "false") {
+        //     console.log(" Column Key with display false : ", key);
+        //     // newColumns[key] = this.columns[key];
+        //     // this.settings = Object.assign({}, settingsOrigine.columns.[key]);
+        //   }
+        // }
+        console.log(" Settings From backend : ", this.settingsOrigine); // Undefined
+    };
+    SmartTableComponent.prototype.ngAfterViewInit = function () {
+        // throw new Error("Method not implemented.");
     };
     SmartTableComponent.prototype.selectColomns = function (columnsToShow) {
-        // console.log("columnsToShow : ", columnsToShow);
         var _this = this;
-        // Selectionner le collones à cacher
+        // Tableau des identifiant des colonnes decocher
+        var unselected = Object.keys(this.columns).filter(function (x) { return !(columnsToShow || []).includes(x); });
+        // Selectionner les collones à Afficher
         var newColumnsToShow = Object.keys(this.columns)
             .filter(function (x) { return (columnsToShow || []).includes(x); })
             .reduce(function (newColumns, column) {
-            newColumns[column] = _this.columns[column];
+            newColumns[column] = _this.columns[column]; // remplire un objet avec seulement les colonnes qui on un index pour etre afficher
             return newColumns;
         }, {});
+        // les option a etre cocher
         this.selectedItem = columnsToShow;
+        //
         var columnsArrayOfObjects1 = [];
-        this.selectedItem.forEach(function (element) {
-            columnsArrayOfObjects1.push({
+        this.selectedItem.forEach(function (element, index) {
+            // console.log(" index : " + index + " element : " + element);
+            columnsArrayOfObjects1.splice(index, 0, {
                 key: element,
                 title: _this.columns[element].title
             });
         });
-        // syncronisation entre le tablau draagable et les options du tag select
+        // syncronisation entre le tablau DRAGUABLE et le composant SELECT
         this.columnsArrayOfObjects = columnsArrayOfObjects1;
         // rafrichir le tableau avec le nouvelle objet settings
         this.settings = Object.assign({}, this.settings, {
@@ -1117,8 +1228,26 @@ var SmartTableComponent = /** @class */ (function () {
         });
         // cree un object colomns/settings qui cntient tous les columns meme ceux supprimer
         // pour pouvoir les reaficher apres si les client
+        // Cree un objet settings en changent les parametre : display="false"
+        /* Changer la valeur de la proprite display apres chaque action */
+        // cacher les colonnes diselectionner
+        unselected.forEach(function (elem) {
+            _this.settingsOrigine.columns[elem].display = "false";
+        });
+        // Faire apparaitre les colonnes selectionner
+        columnsToShow.forEach(function (elem) {
+            _this.settingsOrigine.columns[elem].display = "true";
+        });
+        /*************************************************************** */
+        var preference = {
+            idTable: 1,
+            idUser: 1,
+            preferneceType: "PREF_VISIBILITY",
+            value: this.selectedItem
+        };
+        this.service.updatePreferences(preference); // synchroniser les preferences
         // Envoyer les modification au backend
-        this.service.updateSettings(this.settings);
+        this.service.updateSettings(this.settingsOrigine);
     };
     SmartTableComponent.prototype.hideColomnId = function () {
         // this.newSettings = {};
@@ -1130,7 +1259,7 @@ var SmartTableComponent = /** @class */ (function () {
         console.log("APPEL FUNCTION hideColumnId() ");
     };
     SmartTableComponent.prototype.ngOnChanges = function (changes) {
-        console.log("APPEL FUNCTION hideColumnId() " + changes);
+        console.log("APPEL de l'evenement ngOnChanges() ", changes);
     };
     SmartTableComponent.prototype.onSearch = function (query) {
         if (query === void 0) { query = ""; }
@@ -1140,6 +1269,8 @@ var SmartTableComponent = /** @class */ (function () {
         var searchArray = this.columnsArrayOfObjects.map(function (col) {
             return { field: col.key, search: query };
         });
+        // console.log(this.columnsArrayOfObjects);
+        // console.log(searchArray);
         this.source.setFilter(searchArray, false);
         // second parameter specifying whether to perform 'AND' or 'OR' search
         // (meaning all columns should contain search query or at least one)
@@ -1155,7 +1286,7 @@ var SmartTableComponent = /** @class */ (function () {
     };
     SmartTableComponent.prototype.onSaveConfirm = function (event) {
         if (window.confirm("Are you sure you want to save?")) {
-            event.newData["name"] += " + added in code";
+            event.newData.name += " + added in code";
             event.confirm.resolve(event.newData);
         }
         else {
@@ -1164,7 +1295,7 @@ var SmartTableComponent = /** @class */ (function () {
     };
     SmartTableComponent.prototype.onCreateConfirm = function (event) {
         if (window.confirm("Are you sure you want to create?")) {
-            event.newData["name"] += " + added in code";
+            event.newData.name += " + added in code";
             event.confirm.resolve(event.newData);
         }
         else {
@@ -1174,14 +1305,25 @@ var SmartTableComponent = /** @class */ (function () {
     SmartTableComponent.prototype.drop = function (event) {
         var _this = this;
         moveItemInArray(this.columnsArrayOfObjects, event.previousIndex, event.currentIndex);
+        var arrayOfItemArranged = [];
         var newColumnsToShow = this.columnsArrayOfObjects.reduce(function (newColumnsObject, arrayObject) {
+            arrayOfItemArranged.unshift(arrayObject.key);
+            // console.log("Array Of Item Arranged : ", arrayOfItemArranged);
             newColumnsObject[arrayObject.key] = _this.columns[arrayObject.key];
             return newColumnsObject;
         }, {});
+        // console.log("TableauOrdeonner : ", arrayOfItemArranged);
         // cree un objet settings pour le reasiner au composant
         this.settings = Object.assign({}, this.settings, {
             columns: newColumnsToShow
         });
+        var preference = {
+            idTable: 0,
+            idUser: 0,
+            preferneceType: "PREF_ORDER",
+            value: this.selectedItem
+        };
+        this.service.updatePreferences(preference); // synchroniser les preferences
         // syncroniser les changement avec le backend
         this.service.updateSettings(this.settings);
     };
@@ -1194,7 +1336,7 @@ var SmartTableComponent = /** @class */ (function () {
     ], SmartTableComponent.prototype, "config", void 0);
     __decorate([
         Input(),
-        __metadata("design:type", Object)
+        __metadata("design:type", Array)
     ], SmartTableComponent.prototype, "datafromServer", void 0);
     __decorate([
         ViewChild("ng2smart"),
@@ -1203,7 +1345,7 @@ var SmartTableComponent = /** @class */ (function () {
     SmartTableComponent = __decorate([
         Component({
             selector: "generic-datagrid",
-            template: "<nb-card>\r\n\r\n  <nb-card-header>\r\n\r\n    <nb-card>\r\n      <h1> Generic Data-Grid <br></h1>\r\n    </nb-card>\r\n\r\n    <!-- {{ data | json }} -->\r\n\r\n    <nb-card>\r\n      <div class=\"search-input\">\r\n\r\n        <button nbButton status=\"success\">EXCEL</button>\r\n        <button nbButton status=\"danger\">PDF</button>\r\n\r\n      </div>\r\n    </nb-card>\r\n\r\n    <div class=\"vc-accordion\">\r\n\r\n      <nb-accordion multi>\r\n        <nb-accordion-item>\r\n          <nb-accordion-item-header>\r\n            Mes Preferences\r\n          </nb-accordion-item-header>\r\n          <nb-accordion-item-body>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Selection Colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <nb-select cdkDropList multiple placeholder=\"Multiple Select\" class=\"columns-selection\"\r\n                  (selectedChange)=\"selectColomns($event)\" [(selected)]=\"selectedItem\" shape=\"round\" size=\"small\">\r\n                  <nb-select-label>\r\n                    Selectioner les colonnes \u00E0 afficher\r\n                  </nb-select-label>\r\n                  <nb-option *ngFor=\"let col of columns | keyvalue\" value=\"{{col.key}}\">\r\n                    {{col.value.title}}\r\n                  </nb-option>\r\n                </nb-select>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Trie des colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n          </nb-accordion-item-body>\r\n        </nb-accordion-item>\r\n\r\n        <!-- <nb-accordion-item>\r\n              <nb-accordion-item-header>\r\n                Trie des colonnes\r\n              </nb-accordion-item-header>\r\n              <nb-accordion-item-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-accordion-item-body>\r\n            </nb-accordion-item> -->\r\n\r\n      </nb-accordion>\r\n\r\n    </div>\r\n\r\n    <!-- <button nbButton outline status=\"primary\" (click)=\"hideColomnId()\">iddd</button> -->\r\n\r\n  </nb-card-header>\r\n\r\n  <nb-card-body>\r\n\r\n    <nb-card>\r\n      <input type=\"text\" nbInput fieldSize=\"large\" #search class=\"search\" placeholder=\"Search...\"\r\n        (keydown.enter)=\"onSearch(search.value)\">\r\n    </nb-card>\r\n\r\n    <ng2-smart-table [(settings)]=\"settings\" [source]=\"source\" (deleteConfirm)=\"onDeleteConfirm($event)\"\r\n      (editConfirm)=\"onSaveConfirm($event)\" (createConfirm)=\"onCreateConfirm($event)\">\r\n    </ng2-smart-table>\r\n\r\n  </nb-card-body>\r\n\r\n</nb-card>\r\n"
+            template: "<nb-card>\r\n\r\n  <nb-card-header>\r\n\r\n    <!-- <nb-card>\r\n      <h1> Generic Data-Grid <br></h1>\r\n    </nb-card>\r\n\r\n   {{ settingsOrigine | json }}\r\n\r\n    <nb-card>\r\n      <div class=\"search-input\">\r\n\r\n        <button nbButton status=\"success\">EXCEL</button>\r\n        <button nbButton status=\"danger\">PDF</button>\r\n\r\n      </div>\r\n    </nb-card> -->\r\n\r\n    <div class=\"vc-accordion\">\r\n\r\n      <nb-accordion multi>\r\n        <nb-accordion-item>\r\n          <nb-accordion-item-header>\r\n            Mes Preferences\r\n          </nb-accordion-item-header>\r\n          <nb-accordion-item-body>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Selection Colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <nb-select cdkDropList multiple placeholder=\"Multiple Select\" class=\"columns-selection\"\r\n                  (selectedChange)=\"selectColomns($event)\" [(selected)]=\"selectedItem\" shape=\"round\" size=\"small\">\r\n                  <nb-select-label>\r\n                    Selectioner les colonnes \u00E0 afficher\r\n                  </nb-select-label>\r\n                  <nb-option *ngFor=\"let col of columns | keyvalue\" value=\"{{col.key}}\">\r\n                    {{col.value.title}}\r\n                  </nb-option>\r\n                  <!-- <nb-option *ngFor=\"let col of columnsArrayOfObjects\" value=\"{{col.key}}\">\r\n                    {{col.title}}\r\n                  </nb-option> -->\r\n                </nb-select>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Trie des colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n          </nb-accordion-item-body>\r\n        </nb-accordion-item>\r\n\r\n        <!-- <nb-accordion-item>\r\n              <nb-accordion-item-header>\r\n                Trie des colonnes\r\n              </nb-accordion-item-header>\r\n              <nb-accordion-item-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-accordion-item-body>\r\n            </nb-accordion-item> -->\r\n\r\n      </nb-accordion>\r\n\r\n    </div>\r\n\r\n    <!-- <button nbButton outline status=\"primary\" (click)=\"hideColomnId()\">iddd</button> -->\r\n\r\n  </nb-card-header>\r\n\r\n  <nb-card-body>\r\n\r\n    <nb-card>\r\n      <!-- <input type=\"text\" nbInput fieldSize=\"large\" #search class=\"search\" placeholder=\"Search...\"\r\n        (keydown.enter)=\"onSearch(search.value)\"> -->\r\n    </nb-card>\r\n\r\n    <ng2-smart-table [(settings)]=\"settings\" [source]=\"source\" (deleteConfirm)=\"onDeleteConfirm($event)\"\r\n      (editConfirm)=\"onSaveConfirm($event)\" (createConfirm)=\"onCreateConfirm($event)\">\r\n    </ng2-smart-table>\r\n\r\n  </nb-card-body>\r\n\r\n</nb-card>\r\n\r\n\r\n"
             // changeDetection: ChangeDetectionStrategy.OnPush,
             ,
             styles: ["nb-card{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.search-input{width:100%;display:block;margin-bottom:1rem;margin-right:1rem}.columns-selection{float:center;display:block;width:90%;margin-bottom:1%}.vc-accordion{width:100%;height:auto;clear:both}button{margin:1rem}.example-list{width:100%;max-width:100%;border:1px solid #ccc;min-height:60px;display:flex;flex-direction:row;background:#fff;border-radius:4px;overflow:hidden}.example-box{padding:20px 10px;border-right:1px solid #ccc;color:rgba(0,0,0,.87);display:flex;flex-direction:row;align-items:center;justify-content:center;box-sizing:border-box;cursor:move;background:#fff;font-size:14px;flex-grow:1;flex-basis:0}.cdk-drag-preview{box-sizing:border-box;border-radius:4px;box-shadow:0 5px 5px -3px rgba(0,0,0,.2),0 8px 10px 1px rgba(0,0,0,.14),0 3px 14px 2px rgba(0,0,0,.12)}.cdk-drag-placeholder{opacity:0}.cdk-drag-animating{transition:transform 250ms cubic-bezier(0,0,.2,1);transition:transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)}.example-box:last-child{border:none}.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder){transition:transform 250ms cubic-bezier(0,0,.2,1);transition:transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)}"]
@@ -1310,5 +1452,5 @@ var TablesModule = /** @class */ (function () {
  * Generated bundle index. Do not edit.
  */
 
-export { CONFIG_OBJECT_VINCI, CONFIG_SETTINGS, DATA_Grid, DATA_Table, SmartTableComponent, SmartTableData, SmartTableService, TablesModule, TablesRoutingModule as ɵa, routedComponents as ɵb, TablesComponent as ɵc, CustomRenderComponent as ɵd };
+export { CONFIG_OBJECT_VINCI, CONFIG_SETTINGS, DATA_Grid, DATA_Table, Preferences, SmartTableComponent, SmartTableData, SmartTableService, TablesModule, TablesRoutingModule as ɵa, routedComponents as ɵb, TablesComponent as ɵc, CustomRenderComponent as ɵd };
 //# sourceMappingURL=generic-components-dxc.js.map

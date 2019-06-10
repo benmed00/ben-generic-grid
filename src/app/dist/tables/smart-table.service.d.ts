@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Observable } from 'rxjs';
+import { Observable } from "rxjs";
 export declare abstract class SmartTableData {
     abstract getData(): any[];
     abstract getSettings(): any;
@@ -12,38 +12,24 @@ export declare class SmartTableService extends SmartTableData {
     private _url1;
     private _url2;
     private _url3;
+    private _url4;
     apiUrl: string;
     constructor(_http: HttpClient);
     getData(): TableVinciInterface[];
+    getdata(): Observable<any[]>;
+    getSettingsFromNodeBckend(): Observable<any>;
     getDataFromBackend(): Observable<any[]>;
     editDataFromBackend(settings: any): Observable<any[]>;
     deleteDataFromBackend(): void;
     addDataFromBackend(): void;
     getSettings(): {
-        add: {
-            addButtonContent: string;
-            createButtonContent: string;
-            cancelButtonContent: string;
-            confirmCreate: string;
-        };
-        edit: {
-            editButtonContent: string;
-            saveButtonContent: string;
-            cancelButtonContent: string;
-            confirmSave: string;
-        };
-        delete: {
-            deleteButtonContent: string;
-            confirmDelete: string;
-        };
-        selectMode: string;
         columns: {
             id: {
                 title: string;
                 editable: string;
                 addable: string;
                 type: string;
-                notShownField: string;
+                display: string;
                 hideHeader: string;
                 order: number;
                 filter: boolean;
@@ -54,18 +40,21 @@ export declare class SmartTableService extends SmartTableData {
                 filter: boolean;
                 notShownField: string;
                 order: number;
+                display: string;
             };
             prenom: {
                 title: string;
                 type: string;
                 order: number;
                 filter: boolean;
+                display: string;
             };
             societe: {
                 title: string;
                 type: string;
                 order: number;
                 filter: boolean;
+                display: string;
             };
             fonctionOfficiel: {
                 title: string;
@@ -76,6 +65,7 @@ export declare class SmartTableService extends SmartTableData {
                     value: string;
                 };
                 order: number;
+                display: string;
             };
             affectation: {
                 title: string;
@@ -92,11 +82,13 @@ export declare class SmartTableService extends SmartTableData {
                 };
                 order: number;
                 filter: boolean;
+                display: string;
             };
             periodeAffectation: {
                 title: string;
                 filter: boolean;
                 order: number;
+                display: string;
             };
             fonctionOperationnel: {
                 title: string;
@@ -109,6 +101,7 @@ export declare class SmartTableService extends SmartTableData {
                 editable: string;
                 filter: boolean;
                 order: number;
+                display: string;
             };
         };
     };
@@ -117,11 +110,25 @@ export declare class SmartTableService extends SmartTableData {
     getSetting(): void;
     getVinciSetting(): Observable<Object>;
     editVinciSetting(settings: {}): void;
+    updatePreferences(preference: Preference): import("rxjs").Subscription;
     getSettingsFromGitHub(): Observable<Object>;
     updateData(): TableDateInterface[];
     updateSettings(settings: any): import("rxjs").Subscription;
     etSetting(): any;
     private handleError;
+}
+export declare enum Preferences {
+    PREF_ORDER = 0,
+    PREF_SORT = 1,
+    PREF_FILTER = 2,
+    PREF_VISIBILITY = 3
+}
+export interface Preference {
+    idPreference: number;
+    idTable: number;
+    idUser: number;
+    preferneceType: string;
+    value: string[];
 }
 export interface TableVinciInterface {
     id: number;
@@ -136,30 +143,13 @@ export interface TableVinciInterface {
 }
 export declare const DATA_Grid: TableVinciInterface[];
 export declare const CONFIG_OBJECT_VINCI: {
-    add: {
-        addButtonContent: string;
-        createButtonContent: string;
-        cancelButtonContent: string;
-        confirmCreate: string;
-    };
-    edit: {
-        editButtonContent: string;
-        saveButtonContent: string;
-        cancelButtonContent: string;
-        confirmSave: string;
-    };
-    delete: {
-        deleteButtonContent: string;
-        confirmDelete: string;
-    };
-    selectMode: string;
     columns: {
         id: {
             title: string;
             editable: string;
             addable: string;
             type: string;
-            notShownField: string;
+            display: string;
             hideHeader: string;
             order: number;
             filter: boolean;
@@ -170,18 +160,21 @@ export declare const CONFIG_OBJECT_VINCI: {
             filter: boolean;
             notShownField: string;
             order: number;
+            display: string;
         };
         prenom: {
             title: string;
             type: string;
             order: number;
             filter: boolean;
+            display: string;
         };
         societe: {
             title: string;
             type: string;
             order: number;
             filter: boolean;
+            display: string;
         };
         fonctionOfficiel: {
             title: string;
@@ -192,6 +185,7 @@ export declare const CONFIG_OBJECT_VINCI: {
                 value: string;
             };
             order: number;
+            display: string;
         };
         affectation: {
             title: string;
@@ -208,11 +202,13 @@ export declare const CONFIG_OBJECT_VINCI: {
             };
             order: number;
             filter: boolean;
+            display: string;
         };
         periodeAffectation: {
             title: string;
             filter: boolean;
             order: number;
+            display: string;
         };
         fonctionOperationnel: {
             title: string;
@@ -225,6 +221,7 @@ export declare const CONFIG_OBJECT_VINCI: {
             editable: string;
             filter: boolean;
             order: number;
+            display: string;
         };
     };
 };

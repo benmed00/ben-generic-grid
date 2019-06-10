@@ -1,0 +1,15 @@
+
+
+<nb-layout>
+  <nb-layout-column>
+
+
+    <!-- <generic-datagrid></generic-datagrid> -->
+
+    <generic-datagrid  *ngIf="settings" [datafromServer]="data" [config]="settings"></generic-datagrid>
+
+    <!-- <generic-datagrid [datafromServer]="data"></generic-datagrid> -->
+    <!-- <router-outlet></router-outlet> -->
+
+  </nb-layout-column>
+</nb-layout>

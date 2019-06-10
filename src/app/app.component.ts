@@ -4,19 +4,33 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 import { Component, OnInit } from "@angular/core";
-
+import { AppService } from "./app.service";
+declare var Liferay: any;
 @Component({
   selector: "app-root",
-  template: `
-    <nb-layout>
-      <nb-layout-column>
-        <router-outlet></router-outlet>
-      </nb-layout-column>
-    </nb-layout>
-  `
+  templateUrl: "./app.component.html",
 })
 export class AppComponent implements OnInit {
-  constructor() {}
 
-  ngOnInit(): void {}
+  settings: any;
+  data: any[];
+
+  constructor(public service: AppService) {}
+
+  ngOnInit(): void {
+
+    this.service.getSettings().subscribe(settings => {
+      this.settings = settings;
+      console.log(" SETTINGS : ", this.settings);
+    });
+
+    // this.service.getData().subscribe(settings => {
+    //   this.data = data;
+    //   console.log(" DATA : ", this.data);
+    // });
+
+    this.data = this.service.getData();
+    console.log(" DATA : ", this.data);
+
+  }
 }

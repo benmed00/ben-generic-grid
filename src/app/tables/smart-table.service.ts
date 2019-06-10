@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import { catchError, finalize, map } from "rxjs/operators";
 import { Observable, of, throwError } from "rxjs";
 // import {environment} from 'src\environments';
@@ -20,13 +20,11 @@ export class SmartTableService extends SmartTableData {
   private _url: string = "assets/utils/config_table.json";
   private _url0: string = "assets/utils/vinci_data.json";
   private _url1: string = "assets/utils/settings.ts";
-  private _url2: string =
-    "https://raw.githubusercontent.com/benmed00/vinci-settings/master/vinci_settings.json";
+  private _url2: string = "https://raw.githubusercontent.com/benmed00/vinci-settings/master/vinci_settings.json";
   private _url3: string = "http://localhost:3000";
-
+  private _url4: string = "http://192.168.8.52:9097/api/ui/preference/savePreference";
   // apiUrl = environment.apiUrl;
-  apiUrl =
-    "https://github.dxc.com/mbenyakoub/Generique-DataGrid/blob/master/src/assets/utils";
+  apiUrl = "https://github.dxc.com/mbenyakoub/Generique-DataGrid/blob/master/src/assets/utils";
 
   constructor(private _http: HttpClient) {
     super();
@@ -41,9 +39,8 @@ export class SmartTableService extends SmartTableData {
     return this._http.get<any[]>(this._url3 + "/data");
   }
   getSettingsFromNodeBckend() {
-    return this._http
-      .get(this._url3 + "/settings")
-      .pipe(catchError(this.handleError));
+    return this._http.get<any>("http://localhost:3000/settings");
+      // .pipe(catchError(this.handleError));
   }
 
   getDataFromBackend() {
@@ -84,7 +81,7 @@ export class SmartTableService extends SmartTableData {
   savePreferences() {}
 
   // getLifeCycleTable(): Observable<[MobileItem]> {
-  // return of(DataMobileListItem).pipe(delay(4000));
+    // return of(DataMobileListItem).pipe(delay(4000));
   // }
 
   // updateLifeCycleTableItem(mobileListEditFormComponent: MobileListEditFormComponent): Observable<any> {
@@ -110,6 +107,32 @@ export class SmartTableService extends SmartTableData {
     // CONFIG_OBJECT_VINCI.unshift() = settings;
   }
 
+  updatePreferences(preference : Preference){
+
+    console.log(" Update preference service: ");
+
+    let headers1 = new HttpHeaders();
+    headers1.append('Content-Type', 'application/json').append('accept', '*/*');
+    // headers1 = headers.set('Content-Type', 'application/json; charset=utf-8').set('accept', '*/*; charset=utf-8');
+    // const headers2 = new HttpHeaders({'Content-Type': 'application/json' ,'accept': '*/*'});
+    return this._http
+      // .put(this._url4, preference, { headers: new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8').set(accept, '*/*; charset=utf-8')})
+      .put(this._url4, preference, {headers : headers1})
+      .subscribe({
+          next: data => {
+            console.log("after preference update: ", data);
+          },
+          error: err => {
+              if (err.error instanceof Error) {
+                 console.log('Client-side error occured.');
+              } else {
+                console.log('Server-side error occured.');
+              }
+          }
+        });
+      // .pipe(catchError(this.handleError));
+  }
+
   getSettingsFromGitHub() {
     return this._http
       .get(this.apiUrl + "/settings.ts")
@@ -122,9 +145,7 @@ export class SmartTableService extends SmartTableData {
 
   updateSettings(settings) {
     // console.log(" Update Settings Service ");
-
-    console.log("SERVICE send Settings : ", settings.columns);
-
+    console.log("SERVICE send Settings : ", settings.columns)
     return this._http.post("http://localhost:3000", settings).subscribe({
       next: data => {
         // console.log("data retourned from the backend : ", data);
@@ -155,6 +176,20 @@ export class SmartTableService extends SmartTableData {
     // return an observable with a user-facing error message
     return throwError("Something bad happened; please try again later.");
   }
+}
+
+export enum Preferences {
+  PREF_ORDER, // string
+  PREF_SORT, // string
+  PREF_FILTER, // string
+  PREF_VISIBILITY // string
+}
+export interface Preference {
+  idPreference: number;
+  idTable: number;
+  idUser: number;
+  preferneceType: string;
+  value: string[];
 }
 
 export interface TableVinciInterface {
@@ -283,24 +318,24 @@ export const DATA_Grid: TableVinciInterface[] = [
 ];
 
 export const CONFIG_OBJECT_VINCI = {
-  hideHeader: false,
-  add: {
-    addButtonContent: "<i class='nb-plus'></i>",
-    createButtonContent: "<i class='nb-checkmark'></i>",
-    cancelButtonContent: "<i class='nb-close'></i>",
-    confirmCreate: "true"
-  },
-  edit: {
-    editButtonContent: "<i class='nb-edit'></i>",
-    saveButtonContent: "<i class='nb-checkmark'></i>",
-    cancelButtonContent: "<i class='nb-close'></i>",
-    confirmSave: "true"
-  },
-  delete: {
-    deleteButtonContent: "<i class='nb-trash'></i>",
-    confirmDelete: "true"
-  },
-  selectMode: "multi",
+  // hideHeader: false,
+  // add: {
+  //   addButtonContent: "<i class='nb-plus'></i>",
+  //   createButtonContent: "<i class='nb-checkmark'></i>",
+  //   cancelButtonContent: "<i class='nb-close'></i>",
+  //   confirmCreate: "true"
+  // },
+  // edit: {
+  //   editButtonContent: "<i class='nb-edit'></i>",
+  //   saveButtonContent: "<i class='nb-checkmark'></i>",
+  //   cancelButtonContent: "<i class='nb-close'></i>",
+  //   confirmSave: "true"
+  // },
+  // delete: {
+  //   deleteButtonContent: "<i class='nb-trash'></i>",
+  //   confirmDelete: "true"
+  // },
+  // selectMode: "multi",
   columns: {
     id: {
       title: "ID VINCI",
@@ -310,12 +345,12 @@ export const CONFIG_OBJECT_VINCI = {
       display: "false",
       hideHeader: "true",
       order: 0,
-      filter: false
+      filter: true
     },
     nom: {
       title: "Nom",
       type: "string",
-      filter: false,
+      filter: true,
       notShownField: "false",
       order: 1,
       display: "true"
@@ -324,20 +359,20 @@ export const CONFIG_OBJECT_VINCI = {
       title: "Prénom",
       type: "html",
       order: 2,
-      filter: false,
+      filter: true,
       display: "false"
     },
     societe: {
       title: "Société",
       type: "string",
       order: 3,
-      filter: false,
+      filter: true,
       display: "true"
     },
     fonctionOfficiel: {
       title: "Fonction officiel",
       type: "html",
-      filter: false,
+      filter: true,
       editor: {
         type: "text",
         value: "<input  type='email'>"
@@ -405,7 +440,7 @@ export const CONFIG_OBJECT_VINCI = {
         }
       },
       order: 5,
-      filter: false,
+      filter: true,
       display: "true"
     },
     periodeAffectation: {
