@@ -22,7 +22,9 @@ export class SmartTableService extends SmartTableData {
   private _url1: string = "assets/utils/settings.ts";
   private _url2: string = "https://raw.githubusercontent.com/benmed00/vinci-settings/master/vinci_settings.json";
   private _url3: string = "http://localhost:3000";
-  private _url4: string = "http://192.168.8.52:9097/api/ui/preference/savePreference";
+  private _url4: string = "http://192.168.8.35:9097/api/ui";
+  private _url5: string = "http://192.168.8.38:9097/api/ui";
+  private _url6: string = "http://vcgp-irs.francecentral.cloudapp.azure.com/rest-provider";
   // apiUrl = environment.apiUrl;
   apiUrl = "https://github.dxc.com/mbenyakoub/Generique-DataGrid/blob/master/src/assets/utils";
 
@@ -107,7 +109,7 @@ export class SmartTableService extends SmartTableData {
     // CONFIG_OBJECT_VINCI.unshift() = settings;
   }
 
-  updatePreferences(preference : Preference){
+  updatePreferences(preference : any){
 
     console.log(" Update preference service: ");
 
@@ -117,10 +119,35 @@ export class SmartTableService extends SmartTableData {
     // const headers2 = new HttpHeaders({'Content-Type': 'application/json' ,'accept': '*/*'});
     return this._http
       // .put(this._url4, preference, { headers: new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8').set(accept, '*/*; charset=utf-8')})
-      .put(this._url4, preference, {headers : headers1})
+      .put(this._url6 + "/api/ui/preference/savePreference", preference, {headers : headers1})
       .subscribe({
           next: data => {
             console.log("after preference update: ", data);
+          },
+          error: err => {
+              if (err.error instanceof Error) {
+                 console.log('Client-side error occured : ', err);
+              } else {
+                console.log('Server-side error occured : ', err);
+              }
+          }
+        });
+      // .pipe(catchError(this.handleError));
+  }
+
+
+  getSettingsBackend(roleUser : string, idTable : number,	idUser : number){
+
+    console.log(" Get Settings from Backend: ");
+
+    let headers1 = new HttpHeaders();
+    headers1.append('accept', '*/*');
+    return this._http
+      // .put(this._url4, preference, { headers: new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8').set(accept, '*/*; charset=utf-8')})
+      .get(this._url5 + "/getSetting/"+ roleUser + "/"  + idTable + "/"  + idUser, {headers : headers1})
+      .subscribe({
+          next: data => {
+            console.log("after getting Settings: ", data);
           },
           error: err => {
               if (err.error instanceof Error) {
@@ -144,11 +171,11 @@ export class SmartTableService extends SmartTableData {
   }
 
   updateSettings(settings) {
-    // console.log(" Update Settings Service ");
+    console.log(" Update Settings Service ");
     console.log("SERVICE send Settings : ", settings.columns)
     return this._http.post("http://localhost:3000", settings).subscribe({
       next: data => {
-        // console.log("data retourned from the backend : ", data);
+        console.log("data retourned from the backend : ", data);
       },
       error: this.handleError
     });
@@ -178,7 +205,7 @@ export class SmartTableService extends SmartTableData {
   }
 }
 
-export enum Preferences {
+export enum PreferencesType {
   PREF_ORDER, // string
   PREF_SORT, // string
   PREF_FILTER, // string
@@ -189,7 +216,14 @@ export interface Preference {
   idTable: number;
   idUser: number;
   preferneceType: string;
-  value: string[];
+  roleUser: string,
+  value: [string]; // string[]
+}
+
+export interface Settings {
+  roleUser: string;
+  idTable: number;
+  idUser: number;
 }
 
 export interface TableVinciInterface {
@@ -197,10 +231,10 @@ export interface TableVinciInterface {
   nom: string;
   prenom: string;
   societe: string;
-  fonctionOfficiel: string;
+  fonctionOfficielle: string;
   affectation: string | number;
   periodeAffectation?: string;
-  fonctionOperationnel: string;
+  fonctionOperationnelle: string;
   statut: string;
 }
 
@@ -210,10 +244,10 @@ export const DATA_Grid: TableVinciInterface[] = [
     nom: "LIMOURI",
     prenom: "Anouar",
     societe: "VGCP",
-    fonctionOfficiel: "Architecte IT",
+    fonctionOfficielle: "Architecte IT",
     affectation: "Métro d air",
     periodeAffectation: "26/04/2019 - 31/12/2019",
-    fonctionOperationnel: "Architecte appliquer",
+    fonctionOperationnelle: "Architecte appliquer",
     statut: "Actif"
   },
   {
@@ -221,10 +255,10 @@ export const DATA_Grid: TableVinciInterface[] = [
     nom: "DUPONT",
     prenom: "François",
     societe: "VGCP",
-    fonctionOfficiel: "Chef de projet",
+    fonctionOfficielle: "Chef de projet",
     affectation: "T3C",
     periodeAffectation: "27/04/2019 - 31/12/2019",
-    fonctionOperationnel: "Chef de projet",
+    fonctionOperationnelle: "Chef de projet",
     statut: "Inactif"
   },
   {
@@ -232,10 +266,10 @@ export const DATA_Grid: TableVinciInterface[] = [
     nom: "GARNIEF",
     prenom: "Laurent",
     societe: "DCB",
-    fonctionOfficiel: "Maçon",
+    fonctionOfficielle: "Maçon",
     affectation: "Affectation",
     periodeAffectation: "28/04/2019 - 31/12/2019",
-    fonctionOperationnel: "Chef de chantier",
+    fonctionOperationnelle: "Chef de chantier",
     statut: "A compléter"
   },
   {
@@ -243,10 +277,10 @@ export const DATA_Grid: TableVinciInterface[] = [
     nom: "GAR",
     prenom: "Laure",
     societe: "Eeiffage",
-    fonctionOfficiel: "Peintre",
+    fonctionOfficielle: "Peintre",
     affectation: "Métro du Caire",
     periodeAffectation: "29/04/2019 - 31/12/2019",
-    fonctionOperationnel: "Chef d'équipe",
+    fonctionOperationnelle: "Chef d'équipe",
     statut: "Disponible"
   },
   {
@@ -254,10 +288,10 @@ export const DATA_Grid: TableVinciInterface[] = [
     nom: "CHAOUC",
     prenom: "Mohammed",
     societe: "DXC",
-    fonctionOfficiel: "jconsultant SIRH",
+    fonctionOfficielle: "jconsultant SIRH",
     affectation: "Métro de Copenhague ligne 4",
     periodeAffectation: "30/04/2019 - 31/12/2019",
-    fonctionOperationnel: "PPO",
+    fonctionOperationnelle: "PPO",
     statut: "Indisponible"
   },
   {
@@ -265,10 +299,10 @@ export const DATA_Grid: TableVinciInterface[] = [
     nom: "DUBO",
     prenom: "Meidy",
     societe: "VINCI",
-    fonctionOfficiel: "Maçon",
+    fonctionOfficielle: "Maçon",
     affectation: "Métro de Copenhague ligne 4",
     periodeAffectation: "01/04/2019 - 31/09/2019",
-    fonctionOperationnel: "Fonction opérationnel",
+    fonctionOperationnelle: "Fonction opérationnel",
     statut: "Sorti"
   },
   {
@@ -276,10 +310,10 @@ export const DATA_Grid: TableVinciInterface[] = [
     nom: "BENYAKOUB",
     prenom: "Med",
     societe: "DXC Technologie",
-    fonctionOfficiel: "Peintre",
+    fonctionOfficielle: "Peintre",
     affectation: "Aeroport international Arturo Merino Benitez",
     periodeAffectation: "26/04/2019 - 31/09/2019",
-    fonctionOperationnel: "Couvreur",
+    fonctionOperationnelle: "Couvreur",
     statut: "Sorti"
   },
   {
@@ -287,10 +321,10 @@ export const DATA_Grid: TableVinciInterface[] = [
     nom: "LEBHAR",
     prenom: "Naoufal",
     societe: "DCB",
-    fonctionOfficiel: "Architecte",
+    fonctionOfficielle: "Architecte",
     affectation: "Pont de L'Atlantique",
     periodeAffectation: "26/04/2019 - 01/12/2019",
-    fonctionOperationnel: "Electicien",
+    fonctionOperationnelle: "Electicien",
     statut: "Archivé"
   },
   {
@@ -298,10 +332,10 @@ export const DATA_Grid: TableVinciInterface[] = [
     nom: "TALAL",
     prenom: "Mohssine",
     societe: "DXC",
-    fonctionOfficiel: "Directeur de projet",
+    fonctionOfficielle: "Directeur de projet",
     affectation: "Station d'épuration de Bruxelles sud",
     periodeAffectation: "26/06/2019 - 31/12/2019",
-    fonctionOperationnel: "Conducteur de trvail",
+    fonctionOperationnelle: "Conducteur de trvail",
     statut: "Actif"
   },
   {
@@ -309,10 +343,10 @@ export const DATA_Grid: TableVinciInterface[] = [
     nom: "ABARGHAZ",
     prenom: "Eiffage",
     societe: "@karen",
-    fonctionOfficiel: "Consultante",
+    fonctionOfficielle: "Consultante",
     affectation: "Métro de Doha ligne rouge sud",
     periodeAffectation: "26/04/2019 - 31/12/2019",
-    fonctionOperationnel: "Maçon",
+    fonctionOperationnelle: "Maçon",
     statut: "Disponible"
   }
 ];
@@ -369,7 +403,7 @@ export const CONFIG_OBJECT_VINCI = {
       filter: true,
       display: "true"
     },
-    fonctionOfficiel: {
+    fonctionOfficielle: {
       title: "Fonction officiel",
       type: "html",
       filter: true,
@@ -449,7 +483,7 @@ export const CONFIG_OBJECT_VINCI = {
       order: 6,
       display: "true"
     },
-    fonctionOperationnel: {
+    fonctionOperationnelle: {
       title: "Fonction opérationnel",
       editable: "false",
       order: 7,

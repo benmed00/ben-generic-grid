@@ -19,9 +19,11 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.service.getSettings().subscribe(settings => {
+    // this.settings = this.service.getLocalSettings() ;
+
+    this.service.getSettings('rh', 1, 1).subscribe(settings => {
       this.settings = settings;
-      console.log(" SETTINGS : ", this.settings);
+      // console.log(" SETTINGS : ", this.settings);
     });
 
     // this.service.getData().subscribe(settings => {
@@ -30,7 +32,7 @@ export class AppComponent implements OnInit {
     // });
 
     this.data = this.service.getData();
-    console.log(" DATA : ", this.data);
+    // console.log(" DATA : ", this.data);
 
   }
 }

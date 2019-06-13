@@ -4,7 +4,7 @@ import { LocalDataSource, Ng2SmartTableModule } from 'ng2-smart-table';
 import { NbCardModule, NbButtonModule, NbThemeModule, NbLayoutModule, NbSelectModule, NbCheckboxModule, NbAccordionModule } from '@nebular/theme';
 import { RouterModule } from '@angular/router';
 import { moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { HttpHeaders, HttpClient, HttpClientModule } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -37,7 +37,9 @@ let SmartTableService = class SmartTableService extends SmartTableData {
         this._url1 = "assets/utils/settings.ts";
         this._url2 = "https://raw.githubusercontent.com/benmed00/vinci-settings/master/vinci_settings.json";
         this._url3 = "http://localhost:3000";
-        this._url4 = "http://192.168.8.52:9097/api/ui/preference/savePreference";
+        this._url4 = "http://192.168.8.35:9097/api/ui";
+        this._url5 = "http://192.168.8.38:9097/api/ui";
+        this._url6 = "http://vcgp-irs.francecentral.cloudapp.azure.com/rest-provider";
         // apiUrl = environment.apiUrl;
         this.apiUrl = "https://github.dxc.com/mbenyakoub/Generique-DataGrid/blob/master/src/assets/utils";
     }
@@ -110,10 +112,32 @@ let SmartTableService = class SmartTableService extends SmartTableData {
         // const headers2 = new HttpHeaders({'Content-Type': 'application/json' ,'accept': '*/*'});
         return this._http
             // .put(this._url4, preference, { headers: new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8').set(accept, '*/*; charset=utf-8')})
-            .put(this._url4, preference, { headers: headers1 })
+            .put(this._url6 + "/api/ui/preference/savePreference", preference, { headers: headers1 })
             .subscribe({
             next: data => {
                 console.log("after preference update: ", data);
+            },
+            error: err => {
+                if (err.error instanceof Error) {
+                    console.log('Client-side error occured.');
+                }
+                else {
+                    console.log('Server-side error occured.');
+                }
+            }
+        });
+        // .pipe(catchError(this.handleError));
+    }
+    getSettingsBackend(roleUser, idTable, idUser) {
+        console.log(" Get Settings from Backend: ");
+        let headers1 = new HttpHeaders();
+        headers1.append('accept', '*/*');
+        return this._http
+            // .put(this._url4, preference, { headers: new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8').set(accept, '*/*; charset=utf-8')})
+            .get(this._url5 + "/getSetting/" + roleUser + "/" + idTable + "/" + idUser, { headers: headers1 })
+            .subscribe({
+            next: data => {
+                console.log("after getting Settings: ", data);
             },
             error: err => {
                 if (err.error instanceof Error) {
@@ -172,23 +196,23 @@ SmartTableService = __decorate([
     }),
     __metadata("design:paramtypes", [HttpClient])
 ], SmartTableService);
-var Preferences;
-(function (Preferences) {
-    Preferences[Preferences["PREF_ORDER"] = 0] = "PREF_ORDER";
-    Preferences[Preferences["PREF_SORT"] = 1] = "PREF_SORT";
-    Preferences[Preferences["PREF_FILTER"] = 2] = "PREF_FILTER";
-    Preferences[Preferences["PREF_VISIBILITY"] = 3] = "PREF_VISIBILITY"; // string
-})(Preferences || (Preferences = {}));
+var PreferencesType;
+(function (PreferencesType) {
+    PreferencesType[PreferencesType["PREF_ORDER"] = 0] = "PREF_ORDER";
+    PreferencesType[PreferencesType["PREF_SORT"] = 1] = "PREF_SORT";
+    PreferencesType[PreferencesType["PREF_FILTER"] = 2] = "PREF_FILTER";
+    PreferencesType[PreferencesType["PREF_VISIBILITY"] = 3] = "PREF_VISIBILITY"; // string
+})(PreferencesType || (PreferencesType = {}));
 const DATA_Grid = [
     {
         id: 123456,
         nom: "LIMOURI",
         prenom: "Anouar",
         societe: "VGCP",
-        fonctionOfficiel: "Architecte IT",
+        fonctionOfficielle: "Architecte IT",
         affectation: "Métro d air",
         periodeAffectation: "26/04/2019 - 31/12/2019",
-        fonctionOperationnel: "Architecte appliquer",
+        fonctionOperationnelle: "Architecte appliquer",
         statut: "Actif"
     },
     {
@@ -196,10 +220,10 @@ const DATA_Grid = [
         nom: "DUPONT",
         prenom: "François",
         societe: "VGCP",
-        fonctionOfficiel: "Chef de projet",
+        fonctionOfficielle: "Chef de projet",
         affectation: "T3C",
         periodeAffectation: "27/04/2019 - 31/12/2019",
-        fonctionOperationnel: "Chef de projet",
+        fonctionOperationnelle: "Chef de projet",
         statut: "Inactif"
     },
     {
@@ -207,10 +231,10 @@ const DATA_Grid = [
         nom: "GARNIEF",
         prenom: "Laurent",
         societe: "DCB",
-        fonctionOfficiel: "Maçon",
+        fonctionOfficielle: "Maçon",
         affectation: "Affectation",
         periodeAffectation: "28/04/2019 - 31/12/2019",
-        fonctionOperationnel: "Chef de chantier",
+        fonctionOperationnelle: "Chef de chantier",
         statut: "A compléter"
     },
     {
@@ -218,10 +242,10 @@ const DATA_Grid = [
         nom: "GAR",
         prenom: "Laure",
         societe: "Eeiffage",
-        fonctionOfficiel: "Peintre",
+        fonctionOfficielle: "Peintre",
         affectation: "Métro du Caire",
         periodeAffectation: "29/04/2019 - 31/12/2019",
-        fonctionOperationnel: "Chef d'équipe",
+        fonctionOperationnelle: "Chef d'équipe",
         statut: "Disponible"
     },
     {
@@ -229,10 +253,10 @@ const DATA_Grid = [
         nom: "CHAOUC",
         prenom: "Mohammed",
         societe: "DXC",
-        fonctionOfficiel: "jconsultant SIRH",
+        fonctionOfficielle: "jconsultant SIRH",
         affectation: "Métro de Copenhague ligne 4",
         periodeAffectation: "30/04/2019 - 31/12/2019",
-        fonctionOperationnel: "PPO",
+        fonctionOperationnelle: "PPO",
         statut: "Indisponible"
     },
     {
@@ -240,10 +264,10 @@ const DATA_Grid = [
         nom: "DUBO",
         prenom: "Meidy",
         societe: "VINCI",
-        fonctionOfficiel: "Maçon",
+        fonctionOfficielle: "Maçon",
         affectation: "Métro de Copenhague ligne 4",
         periodeAffectation: "01/04/2019 - 31/09/2019",
-        fonctionOperationnel: "Fonction opérationnel",
+        fonctionOperationnelle: "Fonction opérationnel",
         statut: "Sorti"
     },
     {
@@ -251,10 +275,10 @@ const DATA_Grid = [
         nom: "BENYAKOUB",
         prenom: "Med",
         societe: "DXC Technologie",
-        fonctionOfficiel: "Peintre",
+        fonctionOfficielle: "Peintre",
         affectation: "Aeroport international Arturo Merino Benitez",
         periodeAffectation: "26/04/2019 - 31/09/2019",
-        fonctionOperationnel: "Couvreur",
+        fonctionOperationnelle: "Couvreur",
         statut: "Sorti"
     },
     {
@@ -262,10 +286,10 @@ const DATA_Grid = [
         nom: "LEBHAR",
         prenom: "Naoufal",
         societe: "DCB",
-        fonctionOfficiel: "Architecte",
+        fonctionOfficielle: "Architecte",
         affectation: "Pont de L'Atlantique",
         periodeAffectation: "26/04/2019 - 01/12/2019",
-        fonctionOperationnel: "Electicien",
+        fonctionOperationnelle: "Electicien",
         statut: "Archivé"
     },
     {
@@ -273,10 +297,10 @@ const DATA_Grid = [
         nom: "TALAL",
         prenom: "Mohssine",
         societe: "DXC",
-        fonctionOfficiel: "Directeur de projet",
+        fonctionOfficielle: "Directeur de projet",
         affectation: "Station d'épuration de Bruxelles sud",
         periodeAffectation: "26/06/2019 - 31/12/2019",
-        fonctionOperationnel: "Conducteur de trvail",
+        fonctionOperationnelle: "Conducteur de trvail",
         statut: "Actif"
     },
     {
@@ -284,10 +308,10 @@ const DATA_Grid = [
         nom: "ABARGHAZ",
         prenom: "Eiffage",
         societe: "@karen",
-        fonctionOfficiel: "Consultante",
+        fonctionOfficielle: "Consultante",
         affectation: "Métro de Doha ligne rouge sud",
         periodeAffectation: "26/04/2019 - 31/12/2019",
-        fonctionOperationnel: "Maçon",
+        fonctionOperationnelle: "Maçon",
         statut: "Disponible"
     }
 ];
@@ -343,7 +367,7 @@ const CONFIG_OBJECT_VINCI = {
             filter: true,
             display: "true"
         },
-        fonctionOfficiel: {
+        fonctionOfficielle: {
             title: "Fonction officiel",
             type: "html",
             filter: true,
@@ -423,7 +447,7 @@ const CONFIG_OBJECT_VINCI = {
             order: 6,
             display: "true"
         },
-        fonctionOperationnel: {
+        fonctionOperationnelle: {
             title: "Fonction opérationnel",
             editable: "false",
             order: 7,
@@ -1118,6 +1142,7 @@ let SmartTableComponent = class SmartTableComponent {
         // this.sourceServer = this.datafromServer;
     }
     ngOnInit() {
+        // this.service.getSettingsBackend('rh', 1, 1);
         /* GETTING DATA *****************************************/
         this.source = new LocalDataSource();
         this.data = this.datafromServer;
@@ -1128,16 +1153,15 @@ let SmartTableComponent = class SmartTableComponent {
         // console.log(" Data From Local : ", this.data);
         this.source.load(this.data);
         /* *****************************************************/
-        // this.service.getSettingsFromNodeBckend().subscribe(settings => {
-        // this.settingsOrigine = Object.assign({}, settings);
         this.settingsOrigine = this.config; // recuperer comme input
         // this.settingsOrigine = settings;
         // this.settings = settings; // for direct asignement
         if (this.settingsOrigine) {
             // For resolvingg undefind probleme
-            console.log(" Settings From backend : ", this.settingsOrigine);
+            // console.log(" Settings From backend : ", this.settingsOrigine);
+            this.source.setSort([{ field: 'id', direction: 'asc' }]);
             this.columnnToDisplay = Object.keys(this.settingsOrigine.columns)
-                .filter(key => this.settingsOrigine.columns[key].display !== "false")
+                .filter(key => this.settingsOrigine.columns[key].display !== 'false')
                 .reduce((newColumns, column) => {
                 newColumns[column] = this.settingsOrigine.columns[column];
                 return newColumns;
@@ -1154,11 +1178,19 @@ let SmartTableComponent = class SmartTableComponent {
                     title: this.settingsOrigine.columns[element].title
                 });
             });
+            // let ArrayIdFilterColumns;
+            // this.selectedItem.forEach(element => {
+            //   ArrayIdFilterColumns.push({
+            //     key: element,
+            //     title: this.settingsOrigine.columns[element].title
+            //   });
+            // });
         }
         // }); // fin of subscribe
         if (this.settingsOrigine) {
+            this.appliquerLesFiltres();
             // For resolvingg undefind probleme
-            console.log(" Settings From backend : ", this.settingsOrigine);
+            // console.log(" Settings From backend : ", this.settingsOrigine);
         }
         // this.settings = this.service.getSettings(); // recevoir une instance direct de l'objet settings
         // this.service.getVinciSetting().subscribe(settings => {
@@ -1183,7 +1215,29 @@ let SmartTableComponent = class SmartTableComponent {
         //     // this.settings = Object.assign({}, settingsOrigine.columns.[key]);
         //   }
         // }
-        console.log(" Settings From backend : ", this.settingsOrigine); // Undefined
+        let ValueFilters;
+        let ArrayFilters;
+        const searchLabels = [];
+        this.source.onChanged().subscribe(filterValue => {
+            for (let index = 0; index < filterValue.filter.filters.length; index++) {
+                // console.log(" Filters Value : ", filterValue.filter.filters[index]);
+                // this.filterValues.push
+                searchLabels[JSON.stringify(filterValue.filter.filters[index].field)] =
+                    filterValue.filter.filters[index].search;
+                // ArrayFilters.push(filterValue.filter.filters[index].field);
+                // ArrayFilters.push(filterValue.filter.filters[index].search);
+                console.log('searchLabels : ', searchLabels);
+                // this.service.updatePreferences(preference); // synchroniser les preferences
+            }
+            // debugger;
+            console.log('ArrayFilters : ', ArrayFilters);
+            const arrayValue = Array.from(Object.keys(filterValue.filter.filters), k => [
+                filterValue.filter.filters[k].search,
+                filterValue.filter.filters[k].field
+            ]);
+            // ValueFilters = searchLabels ;
+            console.log('ValueFilters : ', ValueFilters);
+        });
     }
     ngAfterViewInit() {
         // throw new Error("Method not implemented.");
@@ -1221,17 +1275,18 @@ let SmartTableComponent = class SmartTableComponent {
         /* Changer la valeur de la proprite display apres chaque action */
         // cacher les colonnes diselectionner
         unselected.forEach(elem => {
-            this.settingsOrigine.columns[elem].display = "false";
+            this.settingsOrigine.columns[elem].display = 'false';
         });
         // Faire apparaitre les colonnes selectionner
         columnsToShow.forEach(elem => {
-            this.settingsOrigine.columns[elem].display = "true";
+            this.settingsOrigine.columns[elem].display = 'true';
         });
         /*************************************************************** */
-        let preference = {
+        const preference = {
             idTable: 1,
             idUser: 1,
-            preferneceType: "PREF_VISIBILITY",
+            preferneceType: 'PREF_VISIBILITY',
+            roleUser: 'rh',
             value: this.selectedItem
         };
         this.service.updatePreferences(preference); // synchroniser les preferences
@@ -1240,18 +1295,35 @@ let SmartTableComponent = class SmartTableComponent {
     }
     hideColomnId() {
         // this.newSettings = {};
-        this.settings.columns.id.title = "iddddd";
+        this.settings.columns.id.title = 'iddddd';
         this.newSettings = this.settings;
         // console.log("this.settings " + this.newSettings);
         this.settings = Object.assign({}, this.newSettings);
         // console.log("this.settings " + this.settings);
-        console.log("APPEL FUNCTION hideColumnId() ");
+        console.log('APPEL FUNCTION hideColumnId() ');
     }
     ngOnChanges(changes) {
-        console.log("APPEL de l'evenement ngOnChanges() ", changes);
+        // console.log("APPEL de l'evenement ngOnChanges() ", changes);
     }
-    onSearch(query = "") {
-        console.log("-- OnSerch function --");
+    appliquerLesFiltres() {
+        console.log(" --- appliquerLesFiltres() ---- ");
+        const filtersArray = this.columnsArrayOfObjects.map(col => {
+            let columnId = col.key;
+            let filtreValue;
+            if (this.settingsOrigine.columns[col.key].filterData) {
+                filtreValue = this.settingsOrigine.columns[col.key].filterData;
+            }
+            else {
+                filtreValue = "";
+            }
+            console.log(" columnId : " + columnId + " ==== filtreValue : " + filtreValue);
+            return { field: columnId, search: filtreValue };
+        });
+        console.log(" filtersArray : ", filtersArray);
+        this.source.setFilter(filtersArray, false);
+    }
+    onSearch(query = '') {
+        console.log('-- OnSerch function --');
         // crée un tableaux dynamique baser sur les columns de l'object Settingd,
         // pour le donner comme attribue pour la fonction ".setFilter()"
         const searchArray = this.columnsArrayOfObjects.map(col => {
@@ -1265,7 +1337,7 @@ let SmartTableComponent = class SmartTableComponent {
         // 'AND' by default, so changing to 'OR' by setting false here
     }
     onDeleteConfirm(event) {
-        if (window.confirm("Are you sure you want to delete?")) {
+        if (window.confirm('Are you sure you want to delete?')) {
             event.confirm.resolve();
         }
         else {
@@ -1273,8 +1345,8 @@ let SmartTableComponent = class SmartTableComponent {
         }
     }
     onSaveConfirm(event) {
-        if (window.confirm("Are you sure you want to save?")) {
-            event.newData.name += " + added in code";
+        if (window.confirm('Are you sure you want to save?')) {
+            event.newData.name += ' + added in code';
             event.confirm.resolve(event.newData);
         }
         else {
@@ -1282,8 +1354,8 @@ let SmartTableComponent = class SmartTableComponent {
         }
     }
     onCreateConfirm(event) {
-        if (window.confirm("Are you sure you want to create?")) {
-            event.newData.name += " + added in code";
+        if (window.confirm('Are you sure you want to create?')) {
+            event.newData.name += ' + added in code';
             event.confirm.resolve(event.newData);
         }
         else {
@@ -1292,7 +1364,7 @@ let SmartTableComponent = class SmartTableComponent {
     }
     drop(event) {
         moveItemInArray(this.columnsArrayOfObjects, event.previousIndex, event.currentIndex);
-        let arrayOfItemArranged = [];
+        const arrayOfItemArranged = [];
         const newColumnsToShow = this.columnsArrayOfObjects.reduce((newColumnsObject, arrayObject) => {
             arrayOfItemArranged.unshift(arrayObject.key);
             // console.log("Array Of Item Arranged : ", arrayOfItemArranged);
@@ -1304,18 +1376,20 @@ let SmartTableComponent = class SmartTableComponent {
         this.settings = Object.assign({}, this.settings, {
             columns: newColumnsToShow
         });
-        let preference = {
-            idTable: 0,
-            idUser: 0,
-            preferneceType: "PREF_ORDER",
-            value: this.selectedItem
+        let selectedItem2 = Object.keys(newColumnsToShow);
+        const preference = {
+            idTable: 1,
+            idUser: 1,
+            preferneceType: 'PREF_ORDER',
+            roleUser: 'rh',
+            value: selectedItem2
         };
         this.service.updatePreferences(preference); // synchroniser les preferences
         // syncroniser les changement avec le backend
         this.service.updateSettings(this.settings);
     }
     ngOnDestroy() {
-        console.log("settings : " + JSON.stringify(this.settings));
+        console.log('settings : ' + JSON.stringify(this.settings));
     }
 };
 __decorate([
@@ -1327,13 +1401,13 @@ __decorate([
     __metadata("design:type", Array)
 ], SmartTableComponent.prototype, "datafromServer", void 0);
 __decorate([
-    ViewChild("ng2smart"),
+    ViewChild('ng2smart'),
     __metadata("design:type", Object)
 ], SmartTableComponent.prototype, "ng2smart", void 0);
 SmartTableComponent = __decorate([
     Component({
-        selector: "generic-datagrid",
-        template: "<nb-card>\r\n\r\n  <nb-card-header>\r\n\r\n    <!-- <nb-card>\r\n      <h1> Generic Data-Grid <br></h1>\r\n    </nb-card>\r\n\r\n   {{ settingsOrigine | json }}\r\n\r\n    <nb-card>\r\n      <div class=\"search-input\">\r\n\r\n        <button nbButton status=\"success\">EXCEL</button>\r\n        <button nbButton status=\"danger\">PDF</button>\r\n\r\n      </div>\r\n    </nb-card> -->\r\n\r\n    <div class=\"vc-accordion\">\r\n\r\n      <nb-accordion multi>\r\n        <nb-accordion-item>\r\n          <nb-accordion-item-header>\r\n            Mes Preferences\r\n          </nb-accordion-item-header>\r\n          <nb-accordion-item-body>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Selection Colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <nb-select cdkDropList multiple placeholder=\"Multiple Select\" class=\"columns-selection\"\r\n                  (selectedChange)=\"selectColomns($event)\" [(selected)]=\"selectedItem\" shape=\"round\" size=\"small\">\r\n                  <nb-select-label>\r\n                    Selectioner les colonnes \u00E0 afficher\r\n                  </nb-select-label>\r\n                  <nb-option *ngFor=\"let col of columns | keyvalue\" value=\"{{col.key}}\">\r\n                    {{col.value.title}}\r\n                  </nb-option>\r\n                  <!-- <nb-option *ngFor=\"let col of columnsArrayOfObjects\" value=\"{{col.key}}\">\r\n                    {{col.title}}\r\n                  </nb-option> -->\r\n                </nb-select>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Trie des colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n          </nb-accordion-item-body>\r\n        </nb-accordion-item>\r\n\r\n        <!-- <nb-accordion-item>\r\n              <nb-accordion-item-header>\r\n                Trie des colonnes\r\n              </nb-accordion-item-header>\r\n              <nb-accordion-item-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-accordion-item-body>\r\n            </nb-accordion-item> -->\r\n\r\n      </nb-accordion>\r\n\r\n    </div>\r\n\r\n    <!-- <button nbButton outline status=\"primary\" (click)=\"hideColomnId()\">iddd</button> -->\r\n\r\n  </nb-card-header>\r\n\r\n  <nb-card-body>\r\n\r\n    <nb-card>\r\n      <!-- <input type=\"text\" nbInput fieldSize=\"large\" #search class=\"search\" placeholder=\"Search...\"\r\n        (keydown.enter)=\"onSearch(search.value)\"> -->\r\n    </nb-card>\r\n\r\n    <ng2-smart-table [(settings)]=\"settings\" [source]=\"source\" (deleteConfirm)=\"onDeleteConfirm($event)\"\r\n      (editConfirm)=\"onSaveConfirm($event)\" (createConfirm)=\"onCreateConfirm($event)\">\r\n    </ng2-smart-table>\r\n\r\n  </nb-card-body>\r\n\r\n</nb-card>\r\n\r\n\r\n"
+        selector: 'generic-datagrid',
+        template: "<nb-card>\r\n\r\n  <nb-card-header>\r\n\r\n    <!-- <nb-card>\r\n      <h1> Generic Data-Grid <br></h1>\r\n    </nb-card>\r\n\r\n   {{ settingsOrigine | json }}\r\n\r\n    <nb-card>\r\n      <div class=\"search-input\">\r\n\r\n        <button nbButton status=\"success\">EXCEL</button>\r\n        <button nbButton status=\"danger\">PDF</button>\r\n\r\n      </div>\r\n    </nb-card> -->\r\n\r\n    <div class=\"vc-accordion\">\r\n\r\n      <nb-accordion multi>\r\n        <nb-accordion-item>\r\n          <nb-accordion-item-header>\r\n            Mes Preferences\r\n          </nb-accordion-item-header>\r\n          <nb-accordion-item-body>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Selection Colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <nb-select cdkDropList multiple placeholder=\"Multiple Select\" class=\"columns-selection\"\r\n                  (selectedChange)=\"selectColomns($event)\" [(selected)]=\"selectedItem\" shape=\"round\" size=\"small\">\r\n                  <nb-select-label>\r\n                    Selectioner les colonnes \u00E0 afficher\r\n                  </nb-select-label>\r\n                  <nb-option *ngFor=\"let col of columns | keyvalue\" value=\"{{col.key}}\">\r\n                    {{col.value.title}}\r\n                  </nb-option>\r\n                  <!-- <nb-option *ngFor=\"let col of columnsArrayOfObjects\" value=\"{{col.key}}\">\r\n                    {{col.title}}\r\n                  </nb-option> -->\r\n                </nb-select>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Trie des colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n          </nb-accordion-item-body>\r\n        </nb-accordion-item>\r\n\r\n        <!-- <nb-accordion-item>\r\n              <nb-accordion-item-header>\r\n                Trie des colonnes\r\n              </nb-accordion-item-header>\r\n              <nb-accordion-item-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-accordion-item-body>\r\n            </nb-accordion-item> -->\r\n\r\n      </nb-accordion>\r\n\r\n    </div>\r\n\r\n    <!-- <button nbButton outline status=\"primary\" (click)=\"hideColomnId()\">iddd</button> -->\r\n    <!-- <button nbButton outline status=\"primary\" (click)=\"appliquerLesFiltres()\">appliquer Les Filtres</button> -->\r\n  </nb-card-header>\r\n\r\n  <nb-card-body>\r\n\r\n    <nb-card>\r\n      <!-- <input type=\"text\" nbInput fieldSize=\"large\" #search class=\"search\" placeholder=\"Search...\"\r\n        (keydown.enter)=\"onSearch(search.value)\"> -->\r\n    </nb-card>\r\n\r\n    <ng2-smart-table [(settings)]=\"settings\" [source]=\"source\" (deleteConfirm)=\"onDeleteConfirm($event)\"\r\n      (editConfirm)=\"onSaveConfirm($event)\" (createConfirm)=\"onCreateConfirm($event)\">\r\n    </ng2-smart-table>\r\n\r\n  </nb-card-body>\r\n\r\n</nb-card>\r\n\r\n\r\n"
         // changeDetection: ChangeDetectionStrategy.OnPush,
         ,
         styles: ["nb-card{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.search-input{width:100%;display:block;margin-bottom:1rem;margin-right:1rem}.columns-selection{float:center;display:block;width:90%;margin-bottom:1%}.vc-accordion{width:100%;height:auto;clear:both}button{margin:1rem}.example-list{width:100%;max-width:100%;border:1px solid #ccc;min-height:60px;display:flex;flex-direction:row;background:#fff;border-radius:4px;overflow:hidden}.example-box{padding:20px 10px;border-right:1px solid #ccc;color:rgba(0,0,0,.87);display:flex;flex-direction:row;align-items:center;justify-content:center;box-sizing:border-box;cursor:move;background:#fff;font-size:14px;flex-grow:1;flex-basis:0}.cdk-drag-preview{box-sizing:border-box;border-radius:4px;box-shadow:0 5px 5px -3px rgba(0,0,0,.2),0 8px 10px 1px rgba(0,0,0,.14),0 3px 14px 2px rgba(0,0,0,.12)}.cdk-drag-placeholder{opacity:0}.cdk-drag-animating{transition:transform 250ms cubic-bezier(0,0,.2,1);transition:transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)}.example-box:last-child{border:none}.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder){transition:transform 250ms cubic-bezier(0,0,.2,1);transition:transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)}"]
@@ -1416,7 +1490,8 @@ TablesModule = __decorate([
             NbLayoutModule,
             NbSelectModule,
             NbCheckboxModule,
-            NbAccordionModule
+            NbAccordionModule,
+            HttpClientModule
         ],
         providers: [SmartTableService],
         declarations: [...routedComponents, CustomRenderComponent],
@@ -1431,5 +1506,5 @@ TablesModule = __decorate([
  * Generated bundle index. Do not edit.
  */
 
-export { CONFIG_OBJECT_VINCI, CONFIG_SETTINGS, DATA_Grid, DATA_Table, Preferences, SmartTableComponent, SmartTableData, SmartTableService, TablesModule, TablesRoutingModule as ɵa, routedComponents as ɵb, TablesComponent as ɵc, CustomRenderComponent as ɵd };
+export { CONFIG_OBJECT_VINCI, CONFIG_SETTINGS, DATA_Grid, DATA_Table, PreferencesType, SmartTableComponent, SmartTableData, SmartTableService, TablesModule, TablesRoutingModule as ɵa, routedComponents as ɵb, TablesComponent as ɵc, CustomRenderComponent as ɵd };
 //# sourceMappingURL=generic-components-dxc.js.map

@@ -1,9 +1,9 @@
-import { OnInit, OnDestroy, ComponentFactoryResolver, OnChanges, SimpleChanges, AfterViewInit } from "@angular/core";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { LocalDataSource } from "ng2-smart-table";
-import { SmartTableService } from "../smart-table.service";
-import { Observable } from "rxjs";
-import { HttpClient } from "@angular/common/http";
+import { OnInit, OnDestroy, ComponentFactoryResolver, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { LocalDataSource } from 'ng2-smart-table';
+import { SmartTableService } from '../smart-table.service';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 export declare class SmartTableComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
     service: SmartTableService;
     private componentFactoryResolver;
@@ -22,6 +22,7 @@ export declare class SmartTableComponent implements OnInit, OnDestroy, OnChanges
     vinciSettings: any;
     titlesArray: any[];
     columnsArrayOfObjects: any[];
+    filterValues: string[];
     panelOpenState: boolean;
     selectedSetting: any[];
     source: LocalDataSource;
@@ -31,6 +32,7 @@ export declare class SmartTableComponent implements OnInit, OnDestroy, OnChanges
     selectColomns(columnsToShow: any): void;
     hideColomnId(): void;
     ngOnChanges(changes: SimpleChanges): void;
+    appliquerLesFiltres(): void;
     onSearch(query?: string): void;
     onDeleteConfirm(event: any): void;
     onSaveConfirm(event: any): void;

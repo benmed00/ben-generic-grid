@@ -13,6 +13,8 @@ export declare class SmartTableService extends SmartTableData {
     private _url2;
     private _url3;
     private _url4;
+    private _url5;
+    private _url6;
     apiUrl: string;
     constructor(_http: HttpClient);
     getData(): TableVinciInterface[];
@@ -56,7 +58,7 @@ export declare class SmartTableService extends SmartTableData {
                 filter: boolean;
                 display: string;
             };
-            fonctionOfficiel: {
+            fonctionOfficielle: {
                 title: string;
                 type: string;
                 filter: boolean;
@@ -90,7 +92,7 @@ export declare class SmartTableService extends SmartTableData {
                 order: number;
                 display: string;
             };
-            fonctionOperationnel: {
+            fonctionOperationnelle: {
                 title: string;
                 editable: string;
                 order: number;
@@ -110,14 +112,15 @@ export declare class SmartTableService extends SmartTableData {
     getSetting(): void;
     getVinciSetting(): Observable<Object>;
     editVinciSetting(settings: {}): void;
-    updatePreferences(preference: Preference): import("rxjs").Subscription;
+    updatePreferences(preference: any): import("rxjs").Subscription;
+    getSettingsBackend(roleUser: string, idTable: number, idUser: number): import("rxjs").Subscription;
     getSettingsFromGitHub(): Observable<Object>;
     updateData(): TableDateInterface[];
     updateSettings(settings: any): import("rxjs").Subscription;
     etSetting(): any;
     private handleError;
 }
-export declare enum Preferences {
+export declare enum PreferencesType {
     PREF_ORDER = 0,
     PREF_SORT = 1,
     PREF_FILTER = 2,
@@ -128,17 +131,23 @@ export interface Preference {
     idTable: number;
     idUser: number;
     preferneceType: string;
-    value: string[];
+    roleUser: string;
+    value: [string];
+}
+export interface Settings {
+    roleUser: string;
+    idTable: number;
+    idUser: number;
 }
 export interface TableVinciInterface {
     id: number;
     nom: string;
     prenom: string;
     societe: string;
-    fonctionOfficiel: string;
+    fonctionOfficielle: string;
     affectation: string | number;
     periodeAffectation?: string;
-    fonctionOperationnel: string;
+    fonctionOperationnelle: string;
     statut: string;
 }
 export declare const DATA_Grid: TableVinciInterface[];
@@ -176,7 +185,7 @@ export declare const CONFIG_OBJECT_VINCI: {
             filter: boolean;
             display: string;
         };
-        fonctionOfficiel: {
+        fonctionOfficielle: {
             title: string;
             type: string;
             filter: boolean;
@@ -210,7 +219,7 @@ export declare const CONFIG_OBJECT_VINCI: {
             order: number;
             display: string;
         };
-        fonctionOperationnel: {
+        fonctionOperationnelle: {
             title: string;
             editable: string;
             order: number;

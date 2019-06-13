@@ -1,28 +1,46 @@
-import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs/internal/observable/throwError';
-import { HttpErrorResponse, HttpClient } from '@angular/common/http';
+import { Injectable } from "@angular/core";
+import { throwError } from "rxjs/internal/observable/throwError";
+import {
+  HttpErrorResponse,
+  HttpClient,
+  HttpHeaders
+} from "@angular/common/http";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class AppService {
-
   private _url3: string = "http://localhost:3000";
-
-  constructor(private _http: HttpClient) { }
-
+  private _url5: string =
+    "http://vcgp-irs.francecentral.cloudapp.azure.com/rest-provider";
+    private _url6: string = "http://192.168.8.35:9097";
+    // 192.168.8.35:9097/getSetting/rh/1/1
+  constructor(private _http: HttpClient) {}
 
   getData() {
     return DATA_Grid; // from Local
     // return this._http.get<any[]>(this._url3 + "/data"); // From remote with HTTP
   }
 
-  getSettings() {
-    // return CONFIG_OBJECT_VINCI; // from Local
-    return this._http.get<any>(this._url3 + "/settings"); // From remote with HTTP
-      // .pipe(catchError(this.handleError));
+  getLocalSettings() {
+    return CONFIG_OBJECT_VINCI; // from Local
   }
 
+  // getSettings() {
+  getSettings(roleUser: string, idTable: number, idUser: number) {
+    /* **************************************/
+    // return CONFIG_OBJECT_VINCI; // from Local
+    // return this._http.get<any>(this._url3 + "/settings"); // From remote with HTTP
+    // .pipe(catchError(this.handleError));
+    /* **************************************/
+    console.log(" Get Settings from Backend: ");
+    let headers1 = new HttpHeaders();
+    headers1.append("accept", "*/*");
+    return this._http.get<any>(
+      this._url5 + "/getSetting/" + roleUser + "/" + idTable + "/" + idUser,
+      { headers: headers1 }
+    );
+  }
 
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
@@ -38,139 +56,141 @@ export class AppService {
     // return an observable with a user-facing error message
     return throwError("Something bad happened; please try again later.");
   }
-
 }
 
 export interface TableVinciInterface {
-  id: number;
+  idVinci: number;
   nom: string;
   prenom: string;
   societe: string;
-  fonctionOfficiel: string;
+  fonctionOfficielle: string;
   affectation: string | number;
   periodeAffectation?: string;
-  fonctionOperationnel: string;
+  fonctionOperationnelle: string;
   statut: string;
 }
 
 export const DATA_Grid: TableVinciInterface[] = [
   {
-    id: 123456,
+    idVinci: 123456,
     nom: "LIMOURI",
     prenom: "Anouar",
     societe: "VGCP",
-    fonctionOfficiel: "Architecte IT",
+    fonctionOfficielle: "Architecte IT",
     affectation: "Métro d air",
     periodeAffectation: "26/04/2019 - 31/12/2019",
-    fonctionOperationnel: "Architecte appliquer",
+    fonctionOperationnelle: "Architecte appliquer",
     statut: "Actif"
   },
   {
-    id: 234567,
+    idVinci: 234567,
     nom: "DUPONT",
     prenom: "François",
     societe: "VGCP",
-    fonctionOfficiel: "Chef de projet",
+    fonctionOfficielle: "Chef de projet",
     affectation: "T3C",
     periodeAffectation: "27/04/2019 - 31/12/2019",
-    fonctionOperationnel: "Chef de projet",
+    fonctionOperationnelle: "Chef de projet",
     statut: "Inactif"
   },
   {
-    id: 829077,
+    idVinci: 829077,
     nom: "GARNIEF",
     prenom: "Laurent",
     societe: "DCB",
-    fonctionOfficiel: "Maçon",
+    fonctionOfficielle: "Maçon",
     affectation: "Affectation",
     periodeAffectation: "28/04/2019 - 31/12/2019",
-    fonctionOperationnel: "Chef de chantier",
+    fonctionOperationnelle: "Chef de chantier",
     statut: "A compléter"
   },
   {
-    id: 766789,
+    idVinci: 766789,
     nom: "GAR",
     prenom: "Laure",
     societe: "Eeiffage",
-    fonctionOfficiel: "Peintre",
+    fonctionOfficielle: "Peintre",
     affectation: "Métro du Caire",
     periodeAffectation: "29/04/2019 - 31/12/2019",
-    fonctionOperationnel: "Chef d'équipe",
+    fonctionOperationnelle: "Chef d'équipe",
     statut: "Disponible"
   },
   {
-    id: 345678,
+    idVinci: 345678,
     nom: "CHAOUC",
     prenom: "Mohammed",
     societe: "DXC",
-    fonctionOfficiel: "jconsultant SIRH",
+    fonctionOfficielle: "jconsultant SIRH",
     affectation: "Métro de Copenhague ligne 4",
     periodeAffectation: "30/04/2019 - 31/12/2019",
-    fonctionOperationnel: "PPO",
+    fonctionOperationnelle: "PPO",
     statut: "Indisponible"
   },
   {
-    id: 456789,
+    idVinci: 456789,
     nom: "DUBO",
-    prenom: "Meidy",
+    prenom: "MeidVinciy",
     societe: "VINCI",
-    fonctionOfficiel: "Maçon",
+    fonctionOfficielle: "Maçon",
     affectation: "Métro de Copenhague ligne 4",
     periodeAffectation: "01/04/2019 - 31/09/2019",
-    fonctionOperationnel: "Fonction opérationnel",
+    fonctionOperationnelle: "Fonction opérationnel",
     statut: "Sorti"
   },
   {
-    id: 567890,
+    idVinci: 567890,
     nom: "BENYAKOUB",
     prenom: "Med",
     societe: "DXC Technologie",
-    fonctionOfficiel: "Peintre",
+    fonctionOfficielle: "Peintre",
     affectation: "Aeroport international Arturo Merino Benitez",
     periodeAffectation: "26/04/2019 - 31/09/2019",
-    fonctionOperationnel: "Couvreur",
+    fonctionOperationnelle: "Couvreur",
     statut: "Sorti"
   },
   {
-    id: 111111,
+    idVinci: 111111,
     nom: "LEBHAR",
     prenom: "Naoufal",
     societe: "DCB",
-    fonctionOfficiel: "Architecte",
+    fonctionOfficielle: "Architecte",
     affectation: "Pont de L'Atlantique",
     periodeAffectation: "26/04/2019 - 01/12/2019",
-    fonctionOperationnel: "Electicien",
+    fonctionOperationnelle: "Electicien",
     statut: "Archivé"
   },
   {
-    id: 666666,
+    idVinci: 666666,
     nom: "TALAL",
     prenom: "Mohssine",
     societe: "DXC",
-    fonctionOfficiel: "Directeur de projet",
+    fonctionOfficielle: "Directeur de projet",
     affectation: "Station d'épuration de Bruxelles sud",
     periodeAffectation: "26/06/2019 - 31/12/2019",
-    fonctionOperationnel: "Conducteur de trvail",
+    fonctionOperationnelle: "Conducteur de trvail",
     statut: "Actif"
   },
   {
-    id: 101112,
+    idVinci: 101112,
     nom: "ABARGHAZ",
     prenom: "Eiffage",
     societe: "@karen",
-    fonctionOfficiel: "Consultante",
+    fonctionOfficielle: "Consultante",
     affectation: "Métro de Doha ligne rouge sud",
     periodeAffectation: "26/04/2019 - 31/12/2019",
-    fonctionOperationnel: "Maçon",
+    fonctionOperationnelle: "Maçon",
     statut: "Disponible"
   }
 ];
 
-
 export const CONFIG_OBJECT_VINCI = {
-
+  actions: {
+    add: false,
+    edit: false,
+    delete: false
+  },
   columns: {
-    id: {
+    idVinci: {
       title: "ID VINCI",
       editable: "false",
       addable: "false",
@@ -202,7 +222,7 @@ export const CONFIG_OBJECT_VINCI = {
       filter: true,
       display: "true"
     },
-    fonctionOfficiel: {
+    fonctionOfficielle: {
       title: "Fonction officiel",
       type: "html",
       filter: true,
@@ -282,7 +302,7 @@ export const CONFIG_OBJECT_VINCI = {
       order: 6,
       display: "true"
     },
-    fonctionOperationnel: {
+    fonctionOperationnelle: {
       title: "Fonction opérationnel",
       editable: "false",
       order: 7,

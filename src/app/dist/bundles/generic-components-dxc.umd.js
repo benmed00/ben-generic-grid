@@ -98,7 +98,9 @@
             _this._url1 = "assets/utils/settings.ts";
             _this._url2 = "https://raw.githubusercontent.com/benmed00/vinci-settings/master/vinci_settings.json";
             _this._url3 = "http://localhost:3000";
-            _this._url4 = "http://192.168.8.52:9097/api/ui/preference/savePreference";
+            _this._url4 = "http://192.168.8.35:9097/api/ui";
+            _this._url5 = "http://192.168.8.38:9097/api/ui";
+            _this._url6 = "http://vcgp-irs.francecentral.cloudapp.azure.com/rest-provider";
             // apiUrl = environment.apiUrl;
             _this.apiUrl = "https://github.dxc.com/mbenyakoub/Generique-DataGrid/blob/master/src/assets/utils";
             return _this;
@@ -172,10 +174,32 @@
             // const headers2 = new HttpHeaders({'Content-Type': 'application/json' ,'accept': '*/*'});
             return this._http
                 // .put(this._url4, preference, { headers: new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8').set(accept, '*/*; charset=utf-8')})
-                .put(this._url4, preference, { headers: headers1 })
+                .put(this._url6 + "/api/ui/preference/savePreference", preference, { headers: headers1 })
                 .subscribe({
                 next: function (data) {
                     console.log("after preference update: ", data);
+                },
+                error: function (err) {
+                    if (err.error instanceof Error) {
+                        console.log('Client-side error occured.');
+                    }
+                    else {
+                        console.log('Server-side error occured.');
+                    }
+                }
+            });
+            // .pipe(catchError(this.handleError));
+        };
+        SmartTableService.prototype.getSettingsBackend = function (roleUser, idTable, idUser) {
+            console.log(" Get Settings from Backend: ");
+            var headers1 = new http.HttpHeaders();
+            headers1.append('accept', '*/*');
+            return this._http
+                // .put(this._url4, preference, { headers: new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8').set(accept, '*/*; charset=utf-8')})
+                .get(this._url5 + "/getSetting/" + roleUser + "/" + idTable + "/" + idUser, { headers: headers1 })
+                .subscribe({
+                next: function (data) {
+                    console.log("after getting Settings: ", data);
                 },
                 error: function (err) {
                     if (err.error instanceof Error) {
@@ -236,22 +260,22 @@
         return SmartTableService;
     }(SmartTableData));
 
-    (function (Preferences) {
-        Preferences[Preferences["PREF_ORDER"] = 0] = "PREF_ORDER";
-        Preferences[Preferences["PREF_SORT"] = 1] = "PREF_SORT";
-        Preferences[Preferences["PREF_FILTER"] = 2] = "PREF_FILTER";
-        Preferences[Preferences["PREF_VISIBILITY"] = 3] = "PREF_VISIBILITY"; // string
-    })(exports.Preferences || (exports.Preferences = {}));
+    (function (PreferencesType) {
+        PreferencesType[PreferencesType["PREF_ORDER"] = 0] = "PREF_ORDER";
+        PreferencesType[PreferencesType["PREF_SORT"] = 1] = "PREF_SORT";
+        PreferencesType[PreferencesType["PREF_FILTER"] = 2] = "PREF_FILTER";
+        PreferencesType[PreferencesType["PREF_VISIBILITY"] = 3] = "PREF_VISIBILITY"; // string
+    })(exports.PreferencesType || (exports.PreferencesType = {}));
     var DATA_Grid = [
         {
             id: 123456,
             nom: "LIMOURI",
             prenom: "Anouar",
             societe: "VGCP",
-            fonctionOfficiel: "Architecte IT",
+            fonctionOfficielle: "Architecte IT",
             affectation: "Métro d air",
             periodeAffectation: "26/04/2019 - 31/12/2019",
-            fonctionOperationnel: "Architecte appliquer",
+            fonctionOperationnelle: "Architecte appliquer",
             statut: "Actif"
         },
         {
@@ -259,10 +283,10 @@
             nom: "DUPONT",
             prenom: "François",
             societe: "VGCP",
-            fonctionOfficiel: "Chef de projet",
+            fonctionOfficielle: "Chef de projet",
             affectation: "T3C",
             periodeAffectation: "27/04/2019 - 31/12/2019",
-            fonctionOperationnel: "Chef de projet",
+            fonctionOperationnelle: "Chef de projet",
             statut: "Inactif"
         },
         {
@@ -270,10 +294,10 @@
             nom: "GARNIEF",
             prenom: "Laurent",
             societe: "DCB",
-            fonctionOfficiel: "Maçon",
+            fonctionOfficielle: "Maçon",
             affectation: "Affectation",
             periodeAffectation: "28/04/2019 - 31/12/2019",
-            fonctionOperationnel: "Chef de chantier",
+            fonctionOperationnelle: "Chef de chantier",
             statut: "A compléter"
         },
         {
@@ -281,10 +305,10 @@
             nom: "GAR",
             prenom: "Laure",
             societe: "Eeiffage",
-            fonctionOfficiel: "Peintre",
+            fonctionOfficielle: "Peintre",
             affectation: "Métro du Caire",
             periodeAffectation: "29/04/2019 - 31/12/2019",
-            fonctionOperationnel: "Chef d'équipe",
+            fonctionOperationnelle: "Chef d'équipe",
             statut: "Disponible"
         },
         {
@@ -292,10 +316,10 @@
             nom: "CHAOUC",
             prenom: "Mohammed",
             societe: "DXC",
-            fonctionOfficiel: "jconsultant SIRH",
+            fonctionOfficielle: "jconsultant SIRH",
             affectation: "Métro de Copenhague ligne 4",
             periodeAffectation: "30/04/2019 - 31/12/2019",
-            fonctionOperationnel: "PPO",
+            fonctionOperationnelle: "PPO",
             statut: "Indisponible"
         },
         {
@@ -303,10 +327,10 @@
             nom: "DUBO",
             prenom: "Meidy",
             societe: "VINCI",
-            fonctionOfficiel: "Maçon",
+            fonctionOfficielle: "Maçon",
             affectation: "Métro de Copenhague ligne 4",
             periodeAffectation: "01/04/2019 - 31/09/2019",
-            fonctionOperationnel: "Fonction opérationnel",
+            fonctionOperationnelle: "Fonction opérationnel",
             statut: "Sorti"
         },
         {
@@ -314,10 +338,10 @@
             nom: "BENYAKOUB",
             prenom: "Med",
             societe: "DXC Technologie",
-            fonctionOfficiel: "Peintre",
+            fonctionOfficielle: "Peintre",
             affectation: "Aeroport international Arturo Merino Benitez",
             periodeAffectation: "26/04/2019 - 31/09/2019",
-            fonctionOperationnel: "Couvreur",
+            fonctionOperationnelle: "Couvreur",
             statut: "Sorti"
         },
         {
@@ -325,10 +349,10 @@
             nom: "LEBHAR",
             prenom: "Naoufal",
             societe: "DCB",
-            fonctionOfficiel: "Architecte",
+            fonctionOfficielle: "Architecte",
             affectation: "Pont de L'Atlantique",
             periodeAffectation: "26/04/2019 - 01/12/2019",
-            fonctionOperationnel: "Electicien",
+            fonctionOperationnelle: "Electicien",
             statut: "Archivé"
         },
         {
@@ -336,10 +360,10 @@
             nom: "TALAL",
             prenom: "Mohssine",
             societe: "DXC",
-            fonctionOfficiel: "Directeur de projet",
+            fonctionOfficielle: "Directeur de projet",
             affectation: "Station d'épuration de Bruxelles sud",
             periodeAffectation: "26/06/2019 - 31/12/2019",
-            fonctionOperationnel: "Conducteur de trvail",
+            fonctionOperationnelle: "Conducteur de trvail",
             statut: "Actif"
         },
         {
@@ -347,10 +371,10 @@
             nom: "ABARGHAZ",
             prenom: "Eiffage",
             societe: "@karen",
-            fonctionOfficiel: "Consultante",
+            fonctionOfficielle: "Consultante",
             affectation: "Métro de Doha ligne rouge sud",
             periodeAffectation: "26/04/2019 - 31/12/2019",
-            fonctionOperationnel: "Maçon",
+            fonctionOperationnelle: "Maçon",
             statut: "Disponible"
         }
     ];
@@ -406,7 +430,7 @@
                 filter: true,
                 display: "true"
             },
-            fonctionOfficiel: {
+            fonctionOfficielle: {
                 title: "Fonction officiel",
                 type: "html",
                 filter: true,
@@ -486,7 +510,7 @@
                 order: 6,
                 display: "true"
             },
-            fonctionOperationnel: {
+            fonctionOperationnelle: {
                 title: "Fonction opérationnel",
                 editable: "false",
                 order: 7,
@@ -1181,6 +1205,7 @@
             // this.sourceServer = this.datafromServer;
         }
         SmartTableComponent.prototype.ngOnInit = function () {
+            // this.service.getSettingsBackend('rh', 1, 1);
             var _this = this;
             /* GETTING DATA *****************************************/
             this.source = new ng2SmartTable.LocalDataSource();
@@ -1192,16 +1217,15 @@
             // console.log(" Data From Local : ", this.data);
             this.source.load(this.data);
             /* *****************************************************/
-            // this.service.getSettingsFromNodeBckend().subscribe(settings => {
-            // this.settingsOrigine = Object.assign({}, settings);
             this.settingsOrigine = this.config; // recuperer comme input
             // this.settingsOrigine = settings;
             // this.settings = settings; // for direct asignement
             if (this.settingsOrigine) {
                 // For resolvingg undefind probleme
-                console.log(" Settings From backend : ", this.settingsOrigine);
+                // console.log(" Settings From backend : ", this.settingsOrigine);
+                this.source.setSort([{ field: 'id', direction: 'asc' }]);
                 this.columnnToDisplay = Object.keys(this.settingsOrigine.columns)
-                    .filter(function (key) { return _this.settingsOrigine.columns[key].display !== "false"; })
+                    .filter(function (key) { return _this.settingsOrigine.columns[key].display !== 'false'; })
                     .reduce(function (newColumns, column) {
                     newColumns[column] = _this.settingsOrigine.columns[column];
                     return newColumns;
@@ -1218,11 +1242,19 @@
                         title: _this.settingsOrigine.columns[element].title
                     });
                 });
+                // let ArrayIdFilterColumns;
+                // this.selectedItem.forEach(element => {
+                //   ArrayIdFilterColumns.push({
+                //     key: element,
+                //     title: this.settingsOrigine.columns[element].title
+                //   });
+                // });
             }
             // }); // fin of subscribe
             if (this.settingsOrigine) {
+                this.appliquerLesFiltres();
                 // For resolvingg undefind probleme
-                console.log(" Settings From backend : ", this.settingsOrigine);
+                // console.log(" Settings From backend : ", this.settingsOrigine);
             }
             // this.settings = this.service.getSettings(); // recevoir une instance direct de l'objet settings
             // this.service.getVinciSetting().subscribe(settings => {
@@ -1247,7 +1279,29 @@
             //     // this.settings = Object.assign({}, settingsOrigine.columns.[key]);
             //   }
             // }
-            console.log(" Settings From backend : ", this.settingsOrigine); // Undefined
+            var ValueFilters;
+            var ArrayFilters;
+            var searchLabels = [];
+            this.source.onChanged().subscribe(function (filterValue) {
+                for (var index = 0; index < filterValue.filter.filters.length; index++) {
+                    // console.log(" Filters Value : ", filterValue.filter.filters[index]);
+                    // this.filterValues.push
+                    searchLabels[JSON.stringify(filterValue.filter.filters[index].field)] =
+                        filterValue.filter.filters[index].search;
+                    // ArrayFilters.push(filterValue.filter.filters[index].field);
+                    // ArrayFilters.push(filterValue.filter.filters[index].search);
+                    console.log('searchLabels : ', searchLabels);
+                    // this.service.updatePreferences(preference); // synchroniser les preferences
+                }
+                // debugger;
+                console.log('ArrayFilters : ', ArrayFilters);
+                var arrayValue = Array.from(Object.keys(filterValue.filter.filters), function (k) { return [
+                    filterValue.filter.filters[k].search,
+                    filterValue.filter.filters[k].field
+                ]; });
+                // ValueFilters = searchLabels ;
+                console.log('ValueFilters : ', ValueFilters);
+            });
         };
         SmartTableComponent.prototype.ngAfterViewInit = function () {
             // throw new Error("Method not implemented.");
@@ -1286,17 +1340,18 @@
             /* Changer la valeur de la proprite display apres chaque action */
             // cacher les colonnes diselectionner
             unselected.forEach(function (elem) {
-                _this.settingsOrigine.columns[elem].display = "false";
+                _this.settingsOrigine.columns[elem].display = 'false';
             });
             // Faire apparaitre les colonnes selectionner
             columnsToShow.forEach(function (elem) {
-                _this.settingsOrigine.columns[elem].display = "true";
+                _this.settingsOrigine.columns[elem].display = 'true';
             });
             /*************************************************************** */
             var preference = {
                 idTable: 1,
                 idUser: 1,
-                preferneceType: "PREF_VISIBILITY",
+                preferneceType: 'PREF_VISIBILITY',
+                roleUser: 'rh',
                 value: this.selectedItem
             };
             this.service.updatePreferences(preference); // synchroniser les preferences
@@ -1305,19 +1360,37 @@
         };
         SmartTableComponent.prototype.hideColomnId = function () {
             // this.newSettings = {};
-            this.settings.columns.id.title = "iddddd";
+            this.settings.columns.id.title = 'iddddd';
             this.newSettings = this.settings;
             // console.log("this.settings " + this.newSettings);
             this.settings = Object.assign({}, this.newSettings);
             // console.log("this.settings " + this.settings);
-            console.log("APPEL FUNCTION hideColumnId() ");
+            console.log('APPEL FUNCTION hideColumnId() ');
         };
         SmartTableComponent.prototype.ngOnChanges = function (changes) {
-            console.log("APPEL de l'evenement ngOnChanges() ", changes);
+            // console.log("APPEL de l'evenement ngOnChanges() ", changes);
+        };
+        SmartTableComponent.prototype.appliquerLesFiltres = function () {
+            var _this = this;
+            console.log(" --- appliquerLesFiltres() ---- ");
+            var filtersArray = this.columnsArrayOfObjects.map(function (col) {
+                var columnId = col.key;
+                var filtreValue;
+                if (_this.settingsOrigine.columns[col.key].filterData) {
+                    filtreValue = _this.settingsOrigine.columns[col.key].filterData;
+                }
+                else {
+                    filtreValue = "";
+                }
+                console.log(" columnId : " + columnId + " ==== filtreValue : " + filtreValue);
+                return { field: columnId, search: filtreValue };
+            });
+            console.log(" filtersArray : ", filtersArray);
+            this.source.setFilter(filtersArray, false);
         };
         SmartTableComponent.prototype.onSearch = function (query) {
-            if (query === void 0) { query = ""; }
-            console.log("-- OnSerch function --");
+            if (query === void 0) { query = ''; }
+            console.log('-- OnSerch function --');
             // crée un tableaux dynamique baser sur les columns de l'object Settingd,
             // pour le donner comme attribue pour la fonction ".setFilter()"
             var searchArray = this.columnsArrayOfObjects.map(function (col) {
@@ -1331,7 +1404,7 @@
             // 'AND' by default, so changing to 'OR' by setting false here
         };
         SmartTableComponent.prototype.onDeleteConfirm = function (event) {
-            if (window.confirm("Are you sure you want to delete?")) {
+            if (window.confirm('Are you sure you want to delete?')) {
                 event.confirm.resolve();
             }
             else {
@@ -1339,8 +1412,8 @@
             }
         };
         SmartTableComponent.prototype.onSaveConfirm = function (event) {
-            if (window.confirm("Are you sure you want to save?")) {
-                event.newData.name += " + added in code";
+            if (window.confirm('Are you sure you want to save?')) {
+                event.newData.name += ' + added in code';
                 event.confirm.resolve(event.newData);
             }
             else {
@@ -1348,8 +1421,8 @@
             }
         };
         SmartTableComponent.prototype.onCreateConfirm = function (event) {
-            if (window.confirm("Are you sure you want to create?")) {
-                event.newData.name += " + added in code";
+            if (window.confirm('Are you sure you want to create?')) {
+                event.newData.name += ' + added in code';
                 event.confirm.resolve(event.newData);
             }
             else {
@@ -1371,18 +1444,20 @@
             this.settings = Object.assign({}, this.settings, {
                 columns: newColumnsToShow
             });
+            var selectedItem2 = Object.keys(newColumnsToShow);
             var preference = {
-                idTable: 0,
-                idUser: 0,
-                preferneceType: "PREF_ORDER",
-                value: this.selectedItem
+                idTable: 1,
+                idUser: 1,
+                preferneceType: 'PREF_ORDER',
+                roleUser: 'rh',
+                value: selectedItem2
             };
             this.service.updatePreferences(preference); // synchroniser les preferences
             // syncroniser les changement avec le backend
             this.service.updateSettings(this.settings);
         };
         SmartTableComponent.prototype.ngOnDestroy = function () {
-            console.log("settings : " + JSON.stringify(this.settings));
+            console.log('settings : ' + JSON.stringify(this.settings));
         };
         __decorate([
             core.Input(),
@@ -1393,13 +1468,13 @@
             __metadata("design:type", Array)
         ], SmartTableComponent.prototype, "datafromServer", void 0);
         __decorate([
-            core.ViewChild("ng2smart"),
+            core.ViewChild('ng2smart'),
             __metadata("design:type", Object)
         ], SmartTableComponent.prototype, "ng2smart", void 0);
         SmartTableComponent = __decorate([
             core.Component({
-                selector: "generic-datagrid",
-                template: "<nb-card>\r\n\r\n  <nb-card-header>\r\n\r\n    <!-- <nb-card>\r\n      <h1> Generic Data-Grid <br></h1>\r\n    </nb-card>\r\n\r\n   {{ settingsOrigine | json }}\r\n\r\n    <nb-card>\r\n      <div class=\"search-input\">\r\n\r\n        <button nbButton status=\"success\">EXCEL</button>\r\n        <button nbButton status=\"danger\">PDF</button>\r\n\r\n      </div>\r\n    </nb-card> -->\r\n\r\n    <div class=\"vc-accordion\">\r\n\r\n      <nb-accordion multi>\r\n        <nb-accordion-item>\r\n          <nb-accordion-item-header>\r\n            Mes Preferences\r\n          </nb-accordion-item-header>\r\n          <nb-accordion-item-body>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Selection Colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <nb-select cdkDropList multiple placeholder=\"Multiple Select\" class=\"columns-selection\"\r\n                  (selectedChange)=\"selectColomns($event)\" [(selected)]=\"selectedItem\" shape=\"round\" size=\"small\">\r\n                  <nb-select-label>\r\n                    Selectioner les colonnes \u00E0 afficher\r\n                  </nb-select-label>\r\n                  <nb-option *ngFor=\"let col of columns | keyvalue\" value=\"{{col.key}}\">\r\n                    {{col.value.title}}\r\n                  </nb-option>\r\n                  <!-- <nb-option *ngFor=\"let col of columnsArrayOfObjects\" value=\"{{col.key}}\">\r\n                    {{col.title}}\r\n                  </nb-option> -->\r\n                </nb-select>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Trie des colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n          </nb-accordion-item-body>\r\n        </nb-accordion-item>\r\n\r\n        <!-- <nb-accordion-item>\r\n              <nb-accordion-item-header>\r\n                Trie des colonnes\r\n              </nb-accordion-item-header>\r\n              <nb-accordion-item-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-accordion-item-body>\r\n            </nb-accordion-item> -->\r\n\r\n      </nb-accordion>\r\n\r\n    </div>\r\n\r\n    <!-- <button nbButton outline status=\"primary\" (click)=\"hideColomnId()\">iddd</button> -->\r\n\r\n  </nb-card-header>\r\n\r\n  <nb-card-body>\r\n\r\n    <nb-card>\r\n      <!-- <input type=\"text\" nbInput fieldSize=\"large\" #search class=\"search\" placeholder=\"Search...\"\r\n        (keydown.enter)=\"onSearch(search.value)\"> -->\r\n    </nb-card>\r\n\r\n    <ng2-smart-table [(settings)]=\"settings\" [source]=\"source\" (deleteConfirm)=\"onDeleteConfirm($event)\"\r\n      (editConfirm)=\"onSaveConfirm($event)\" (createConfirm)=\"onCreateConfirm($event)\">\r\n    </ng2-smart-table>\r\n\r\n  </nb-card-body>\r\n\r\n</nb-card>\r\n\r\n\r\n"
+                selector: 'generic-datagrid',
+                template: "<nb-card>\r\n\r\n  <nb-card-header>\r\n\r\n    <!-- <nb-card>\r\n      <h1> Generic Data-Grid <br></h1>\r\n    </nb-card>\r\n\r\n   {{ settingsOrigine | json }}\r\n\r\n    <nb-card>\r\n      <div class=\"search-input\">\r\n\r\n        <button nbButton status=\"success\">EXCEL</button>\r\n        <button nbButton status=\"danger\">PDF</button>\r\n\r\n      </div>\r\n    </nb-card> -->\r\n\r\n    <div class=\"vc-accordion\">\r\n\r\n      <nb-accordion multi>\r\n        <nb-accordion-item>\r\n          <nb-accordion-item-header>\r\n            Mes Preferences\r\n          </nb-accordion-item-header>\r\n          <nb-accordion-item-body>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Selection Colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <nb-select cdkDropList multiple placeholder=\"Multiple Select\" class=\"columns-selection\"\r\n                  (selectedChange)=\"selectColomns($event)\" [(selected)]=\"selectedItem\" shape=\"round\" size=\"small\">\r\n                  <nb-select-label>\r\n                    Selectioner les colonnes \u00E0 afficher\r\n                  </nb-select-label>\r\n                  <nb-option *ngFor=\"let col of columns | keyvalue\" value=\"{{col.key}}\">\r\n                    {{col.value.title}}\r\n                  </nb-option>\r\n                  <!-- <nb-option *ngFor=\"let col of columnsArrayOfObjects\" value=\"{{col.key}}\">\r\n                    {{col.title}}\r\n                  </nb-option> -->\r\n                </nb-select>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Trie des colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n          </nb-accordion-item-body>\r\n        </nb-accordion-item>\r\n\r\n        <!-- <nb-accordion-item>\r\n              <nb-accordion-item-header>\r\n                Trie des colonnes\r\n              </nb-accordion-item-header>\r\n              <nb-accordion-item-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-accordion-item-body>\r\n            </nb-accordion-item> -->\r\n\r\n      </nb-accordion>\r\n\r\n    </div>\r\n\r\n    <!-- <button nbButton outline status=\"primary\" (click)=\"hideColomnId()\">iddd</button> -->\r\n    <!-- <button nbButton outline status=\"primary\" (click)=\"appliquerLesFiltres()\">appliquer Les Filtres</button> -->\r\n  </nb-card-header>\r\n\r\n  <nb-card-body>\r\n\r\n    <nb-card>\r\n      <!-- <input type=\"text\" nbInput fieldSize=\"large\" #search class=\"search\" placeholder=\"Search...\"\r\n        (keydown.enter)=\"onSearch(search.value)\"> -->\r\n    </nb-card>\r\n\r\n    <ng2-smart-table [(settings)]=\"settings\" [source]=\"source\" (deleteConfirm)=\"onDeleteConfirm($event)\"\r\n      (editConfirm)=\"onSaveConfirm($event)\" (createConfirm)=\"onCreateConfirm($event)\">\r\n    </ng2-smart-table>\r\n\r\n  </nb-card-body>\r\n\r\n</nb-card>\r\n\r\n\r\n"
                 // changeDetection: ChangeDetectionStrategy.OnPush,
                 ,
                 styles: ["nb-card{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.search-input{width:100%;display:block;margin-bottom:1rem;margin-right:1rem}.columns-selection{float:center;display:block;width:90%;margin-bottom:1%}.vc-accordion{width:100%;height:auto;clear:both}button{margin:1rem}.example-list{width:100%;max-width:100%;border:1px solid #ccc;min-height:60px;display:flex;flex-direction:row;background:#fff;border-radius:4px;overflow:hidden}.example-box{padding:20px 10px;border-right:1px solid #ccc;color:rgba(0,0,0,.87);display:flex;flex-direction:row;align-items:center;justify-content:center;box-sizing:border-box;cursor:move;background:#fff;font-size:14px;flex-grow:1;flex-basis:0}.cdk-drag-preview{box-sizing:border-box;border-radius:4px;box-shadow:0 5px 5px -3px rgba(0,0,0,.2),0 8px 10px 1px rgba(0,0,0,.14),0 3px 14px 2px rgba(0,0,0,.12)}.cdk-drag-placeholder{opacity:0}.cdk-drag-animating{transition:transform 250ms cubic-bezier(0,0,.2,1);transition:transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)}.example-box:last-child{border:none}.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder){transition:transform 250ms cubic-bezier(0,0,.2,1);transition:transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)}"]
@@ -1489,7 +1564,8 @@
                     theme.NbLayoutModule,
                     theme.NbSelectModule,
                     theme.NbCheckboxModule,
-                    theme.NbAccordionModule
+                    theme.NbAccordionModule,
+                    http.HttpClientModule
                 ],
                 providers: [SmartTableService],
                 declarations: __spread(routedComponents, [CustomRenderComponent]),

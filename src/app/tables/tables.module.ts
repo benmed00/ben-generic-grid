@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { Ng2CompleterModule } from "ng2-completer";
 import {MatExpansionModule, MatInputModule, MatSelectModule, MatFormFieldModule} from '@angular/material';
+import { HttpClientModule } from '@angular/common/http';
 // import { MatFormFieldModule } from '@angular/material/form-field';
 @NgModule({
   imports: [
@@ -39,7 +40,8 @@ import {MatExpansionModule, MatInputModule, MatSelectModule, MatFormFieldModule}
     NbLayoutModule,
     NbSelectModule,
     NbCheckboxModule,
-    NbAccordionModule
+    NbAccordionModule,
+    HttpClientModule
   ],
   providers: [SmartTableService],
   declarations: [...routedComponents, CustomRenderComponent],
