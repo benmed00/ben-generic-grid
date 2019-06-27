@@ -5,17 +5,23 @@ import {
   HttpClient,
   HttpHeaders
 } from "@angular/common/http";
+import { ButtonViewComponent } from "./shared/renderComponents/button-view.component";
+import { SmartTableService } from "./tables/smart-table.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class AppService {
+
+
+
   private _url3: string = "http://localhost:3000";
   private _url5: string =
     "http://vcgp-irs.francecentral.cloudapp.azure.com/rest-provider";
     private _url6: string = "http://192.168.8.35:9097";
     // 192.168.8.35:9097/getSetting/rh/1/1
-  constructor(private _http: HttpClient) {}
+  constructor(private _http: HttpClient,
+    private serviceDataGrid: SmartTableService) {}
 
   getData() {
     return DATA_Grid; // from Local
@@ -42,6 +48,9 @@ export class AppService {
     );
   }
 
+
+
+
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
@@ -60,7 +69,8 @@ export class AppService {
 
 export interface TableVinciInterface {
   idVinci: number;
-  nom: string;
+  name: string;
+  button?: string;
   prenom: string;
   societe: string;
   fonctionOfficielle: string;
@@ -68,23 +78,54 @@ export interface TableVinciInterface {
   periodeAffectation?: string;
   fonctionOperationnelle: string;
   statut: string;
+
+  dateDeNaissance?:string;
+  paysDeNaissance?:string;
+  genre?:string;
+  fonctionOfficiel?:string;
+  numeroDeTelephoneParDefaut?:string;
+  typeDeContrat?:string;
+  adresseEmailParDefaut?:string;
+  societeDAppartenance?:string;
+  handicap?:string;
+  nomPersonneEnCasDurgence?:string;
+  img?:string;
+  prenom1?:string;
+  nom?: string;
+
+  filterValue?: string;
+
 }
 
 export const DATA_Grid: TableVinciInterface[] = [
   {
+    nom:"BENYAKOUB",
+    prenom1: "Moammed",
+    img:"https://media.licdn.com/dms/image/C5603AQFeYiRXPD3C4w/profile-displayphoto-shrink_200_200/0?e=1567036800&v=beta&t=JTUs_pVgZeeYcRCkP2xdP8BMxpK8_7EMhCxrDuowajM",
     idVinci: 123456,
-    nom: "LIMOURI",
+    name: "LIMOURI",
+    button: 'Button #1',
     prenom: "Anouar",
     societe: "VGCP",
     fonctionOfficielle: "Architecte IT",
     affectation: "Métro d air",
-    periodeAffectation: "26/04/2019 - 31/12/2019",
+    periodeAffectation: "11/04/2019 - 31/12/2019",
     fonctionOperationnelle: "Architecte appliquer",
-    statut: "Actif"
+    statut: "Actif",
+    dateDeNaissance:"28/01/1994",
+    paysDeNaissance:"Lyon, France",
+    genre:"Homme",
+    fonctionOfficiel:"Chef de chantier",
+    numeroDeTelephoneParDefaut:"+3378767648",
+    typeDeContrat:"CDI",
+    adresseEmailParDefaut:"anna@vinci.com",
+    societeDAppartenance:"Vinci Constructions Grands Projets",
+    handicap:"Non",
+    nomPersonneEnCasDurgence:" Hugo Rousseau +33651889867 ",
   },
   {
     idVinci: 234567,
-    nom: "DUPONT",
+    name: "DUPONT",
     prenom: "François",
     societe: "VGCP",
     fonctionOfficielle: "Chef de projet",
@@ -95,7 +136,7 @@ export const DATA_Grid: TableVinciInterface[] = [
   },
   {
     idVinci: 829077,
-    nom: "GARNIEF",
+    name: "GARNIEF",
     prenom: "Laurent",
     societe: "DCB",
     fonctionOfficielle: "Maçon",
@@ -106,7 +147,7 @@ export const DATA_Grid: TableVinciInterface[] = [
   },
   {
     idVinci: 766789,
-    nom: "GAR",
+    name: "GAR",
     prenom: "Laure",
     societe: "Eeiffage",
     fonctionOfficielle: "Peintre",
@@ -117,7 +158,7 @@ export const DATA_Grid: TableVinciInterface[] = [
   },
   {
     idVinci: 345678,
-    nom: "CHAOUC",
+    name: "CHAOUC",
     prenom: "Mohammed",
     societe: "DXC",
     fonctionOfficielle: "jconsultant SIRH",
@@ -128,7 +169,7 @@ export const DATA_Grid: TableVinciInterface[] = [
   },
   {
     idVinci: 456789,
-    nom: "DUBO",
+    name: "DUBO",
     prenom: "MeidVinciy",
     societe: "VINCI",
     fonctionOfficielle: "Maçon",
@@ -139,7 +180,7 @@ export const DATA_Grid: TableVinciInterface[] = [
   },
   {
     idVinci: 567890,
-    nom: "BENYAKOUB",
+    name: "BENYAKOUB",
     prenom: "Med",
     societe: "DXC Technologie",
     fonctionOfficielle: "Peintre",
@@ -150,7 +191,7 @@ export const DATA_Grid: TableVinciInterface[] = [
   },
   {
     idVinci: 111111,
-    nom: "LEBHAR",
+    name: "LEBHAR",
     prenom: "Naoufal",
     societe: "DCB",
     fonctionOfficielle: "Architecte",
@@ -161,7 +202,7 @@ export const DATA_Grid: TableVinciInterface[] = [
   },
   {
     idVinci: 666666,
-    nom: "TALAL",
+    name: "TALAL",
     prenom: "Mohssine",
     societe: "DXC",
     fonctionOfficielle: "Directeur de projet",
@@ -172,7 +213,7 @@ export const DATA_Grid: TableVinciInterface[] = [
   },
   {
     idVinci: 101112,
-    nom: "ABARGHAZ",
+    name: "ABARGHAZ",
     prenom: "Eiffage",
     societe: "@karen",
     fonctionOfficielle: "Consultante",
@@ -184,23 +225,47 @@ export const DATA_Grid: TableVinciInterface[] = [
 ];
 
 export const CONFIG_OBJECT_VINCI = {
+
   actions: {
     add: false,
     edit: false,
-    delete: false
+    delete: false,
+    custom: [
+      {
+        name: 'view',
+        title: '<button><i class="nb-search"></i></button>',
+      },
+      {
+        name: 'consulter',
+        title: '<i class="nb-compose"></i>',
+      },
+    ],
   },
   columns: {
+    button: {
+      title: 'Button',
+      type: 'custom',
+      filter: false,
+      display: "false",
+      renderComponent: ButtonViewComponent,
+      onComponentInitFunction(instance) {
+        instance.save.subscribe(row => {
+          alert(`${row.name} saved!`)
+        });
+      }
+    },
     idVinci: {
       title: "ID VINCI",
       editable: "false",
       addable: "false",
       type: "number",
-      display: "false",
+      display: "true",
       hideHeader: "true",
       order: 0,
-      filter: true
+      filter: true,
+      filterValue: "m"
     },
-    nom: {
+    name: {
       title: "Nom",
       type: "string",
       filter: true,
@@ -213,14 +278,14 @@ export const CONFIG_OBJECT_VINCI = {
       type: "html",
       order: 2,
       filter: true,
-      display: "false"
+      display: "true"
     },
     societe: {
       title: "Société",
       type: "string",
       order: 3,
       filter: true,
-      display: "true"
+      display: "false",
     },
     fonctionOfficielle: {
       title: "Fonction officiel",
@@ -231,7 +296,7 @@ export const CONFIG_OBJECT_VINCI = {
         value: "<input  type='email'>"
       },
       order: 4,
-      display: "true"
+      display: "false",
     },
     affectation: {
       title: "Affectation",
@@ -294,26 +359,27 @@ export const CONFIG_OBJECT_VINCI = {
       },
       order: 5,
       filter: true,
-      display: "true"
+      display: "false",
     },
     periodeAffectation: {
       title: "Période d'affectation",
-      filter: false,
+      filter: true,
       order: 6,
-      display: "true"
+      display: "false",
     },
     fonctionOperationnelle: {
       title: "Fonction opérationnel",
       editable: "false",
       order: 7,
-      filter: false
+      filter: true,
+      display: "false",
     },
     statut: {
       title: "Statut",
       editable: "true",
-      filter: false,
+      filter: true,
       order: 8,
-      display: "true"
+      display: "false",
     }
   }
 };

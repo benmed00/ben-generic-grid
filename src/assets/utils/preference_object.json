@@ -1,0 +1,63 @@
+{
+
+  "idPreference": 0,
+
+  "idTable": 0,
+
+  "idUser": 0,
+
+  "roleUser": "rh",
+
+  "value": [
+
+    {
+
+      "preferenceType": "PREF_SORT",
+
+      "value": [
+
+        "nom","prenom"
+
+      ]
+
+    },
+
+        {
+
+      "preferenceType": "PREF_FILTER",
+
+      "value": [
+
+        "nom:fez","prenom:test"
+
+      ]
+
+    },
+
+     {
+
+      "preferenceType": "PREF_ORDER",
+
+      "value": [
+
+        "nom","prenom"
+
+      ]
+
+    },
+
+     {
+
+      "preferenceType": "PREF_VISIBILITY",
+
+      "value": [
+
+        "nom"
+
+      ]
+
+    }
+
+  ]
+
+}

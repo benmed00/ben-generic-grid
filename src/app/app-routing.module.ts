@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
+import { DossierCollaborateurComponent } from './dossier-collaborateur/dossier-collaborateur.component';
 
 const routes: Routes = [
   {
@@ -12,7 +13,18 @@ const routes: Routes = [
         loadChildren: "./tables/tables.module#TablesModule"
       }
     ]
-  }
+  },
+  {
+    path: 'displayUser',
+    component: DossierCollaborateurComponent,
+  },
+  {
+    path: 'displayUser/2/1',
+    redirectTo: '/displayUser'  },
+  {
+    path: '**',
+    component: DossierCollaborateurComponent,
+  },
 ];
 
 @NgModule({

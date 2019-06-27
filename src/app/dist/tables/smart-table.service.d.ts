@@ -7,6 +7,7 @@ export declare abstract class SmartTableData {
 }
 export declare class SmartTableService extends SmartTableData {
     private _http;
+    activeTabs: boolean;
     private _url;
     private _url0;
     private _url1;
@@ -17,6 +18,8 @@ export declare class SmartTableService extends SmartTableData {
     private _url6;
     apiUrl: string;
     constructor(_http: HttpClient);
+    updateActiveTab(activeTab: boolean): void;
+    getActivetab(): boolean;
     getData(): TableVinciInterface[];
     getdata(): Observable<any[]>;
     getSettingsFromNodeBckend(): Observable<any>;
@@ -113,6 +116,8 @@ export declare class SmartTableService extends SmartTableData {
     getVinciSetting(): Observable<Object>;
     editVinciSetting(settings: {}): void;
     updatePreferences(preference: any): import("rxjs").Subscription;
+    updatePreferencesObject(preference: any): import("rxjs").Subscription;
+    getActiveTab(active: boolean): boolean;
     getSettingsBackend(roleUser: string, idTable: number, idUser: number): import("rxjs").Subscription;
     getSettingsFromGitHub(): Observable<Object>;
     updateData(): TableDateInterface[];
@@ -150,6 +155,16 @@ export interface TableVinciInterface {
     fonctionOperationnelle: string;
     statut: string;
 }
+export declare const PREFERENCE_OBJECT: {
+    idPreference: number;
+    idTable: number;
+    idUser: number;
+    roleUser: string;
+    value: {
+        preferenceType: string;
+        value: string[];
+    }[];
+};
 export declare const DATA_Grid: TableVinciInterface[];
 export declare const CONFIG_OBJECT_VINCI: {
     columns: {

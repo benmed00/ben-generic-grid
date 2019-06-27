@@ -36,7 +36,7 @@ import { CONFIG_SETTINGS } from "assets/utils/settings";
     `
   ]
 })
-export class SmartTableComponent implements OnInit, OnDestroy {
+export class SmartTableComponent1 implements OnInit, OnDestroy {
   @Input() config;
   @Input() data;
 

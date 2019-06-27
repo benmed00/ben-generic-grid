@@ -8,12 +8,15 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectionStrategy,
-  AfterViewInit
+  AfterViewInit,
+  TemplateRef,
+  EventEmitter,
+  Output
 } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
-import { CustomRenderComponent } from './custom-render.component';
+import { CustomRenderComponent } from '../../shared/renderComponents/custom-render.component';
 import { SmartTableData, SmartTableService } from '../smart-table.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { log, debug } from 'util';
@@ -23,6 +26,8 @@ import { log, debug } from 'util';
 import { HttpClient } from '@angular/common/http';
 import { Preferences } from '../../../app/shared/enum/preferences_model';
 import { $$ } from 'protractor';
+import { NbDialogService, NbWindowService } from '@nebular/theme';
+import { Router } from '@angular/router';
 @Component({
   selector: 'generic-datagrid',
   styleUrls: ['./smart-table.component.scss'],
@@ -49,24 +54,32 @@ export class SmartTableComponent
   titlesArray = [];
   columnsArrayOfObjects = [];
 
+  disable :boolean = false;
 
 /* Variables meants for ************/
   filterValues: string[];
   searchLabels: string[] = [];
   ValueFilters: [string];
   ArrayFilters: Array<string>;
+  selectedItem2: string[] = [];
 /* ********************************/
-
 
   panelOpenState = false;
 
   selectedSetting: any[];
   // source: ServerDataSource;
+  @Output() idCollaborateur = new EventEmitter<string>();
+
+  @ViewChild('contentTemplate') contentTemplate: TemplateRef<any>;
+  // @ViewChild('contentTemplate', { static: false }) contentTemplate: TemplateRef<any>;
+
   source: LocalDataSource = new LocalDataSource();
   constructor(
     public service: SmartTableService,
     private componentFactoryResolver: ComponentFactoryResolver,
-    http: HttpClient
+    http: HttpClient,
+    private windowService: NbWindowService,
+    private router: Router
   ) {
     // this.settingsOrigine = Object.assign({}, this.service.getSettings());
     // console.log(" Original Setttings : ", this.settingsOrigine);
@@ -97,7 +110,12 @@ export class SmartTableComponent
 
     this.settingsOrigine = this.config; // recuperer comme input
 
+    // console.log(" Settings Origine : ",  this.settingsOrigine);
+
+
+
     if (this.settingsOrigine) {
+
       this.source.setSort([{ field: 'id', direction: 'asc' }]);
       this.columnnToDisplay = Object.keys(this.settingsOrigine.columns)
         .filter(key => this.settingsOrigine.columns[key].display !== 'false')
@@ -122,6 +140,7 @@ export class SmartTableComponent
           title: this.settingsOrigine.columns[element].title
         });
       });
+      // console.log(" l'Objet Colonnes : ", this.columns);
     }
 
     if (this.settingsOrigine) {
@@ -139,10 +158,10 @@ export class SmartTableComponent
 
       for (let index = 0; index < filterValue.filter.filters.length; index++) {
         // console.log(" Filters Value : ", filterValue.filter.filters[index]);
-        this.searchLabels[index] = filterValue.filter.filters[index].field + ":" + filterValue.filter.filters[index].search;
+        this.searchLabels[index] = filterValue.filter.filters[index].field + ':' + filterValue.filter.filters[index].search;
       }
 
-      console.log(' searchLabels : ', this.searchLabels);
+      // console.log(' searchLabels : ', this.searchLabels);
 
       const preference: any = {
         idTable: 1,
@@ -152,11 +171,7 @@ export class SmartTableComponent
         value: this.searchLabels
       };
 
-      this.service.updatePreferences(preference); // synchroniser les preferences
-
-      // debugger; // used for debugging
-
-      console.log('ArrayFilters : ', this.ArrayFilters );
+      // this.service.updatePreferences(preference); // synchroniser les preferences
 
       const arrayValue = Array.from(
         Object.keys(filterValue.filter.filters),
@@ -165,8 +180,8 @@ export class SmartTableComponent
           filterValue.filter.filters[k].field
         ]
       );
-      
-      console.log('ValueFilters : ', this.ValueFilters );
+      // console.log('arrayValue : ', arrayValue );
+
     });
     /* ******************************************************************************************/
   }
@@ -176,7 +191,14 @@ export class SmartTableComponent
   }
 
   selectColomns(columnsToShow) {
+    // if( this.selectedItem.length > 3 ) return;
     // Tableau des identifiant des colonnes decocher
+
+    // this.selectedItem.includes
+
+    // console.log("Colonnes à afficher :", columnsToShow);
+    // console.log(" Selected Items : ", this.selectedItem);
+
     const unselected = Object.keys(this.columns).filter(
       x => !(columnsToShow || []).includes(x)
     );
@@ -192,7 +214,6 @@ export class SmartTableComponent
     // les option a etre cocher
     this.selectedItem = columnsToShow;
 
-    //
     const columnsArrayOfObjects1 = [];
     this.selectedItem.forEach((element, index) => {
       // console.log(" index : " + index + " element : " + element);
@@ -209,7 +230,6 @@ export class SmartTableComponent
     this.settings = Object.assign({}, this.settings, {
       columns: newColumnsToShow
     });
-
     // cree un object colomns/settings qui cntient tous les columns meme ceux supprimer
     // pour pouvoir les reaficher apres si les client
 
@@ -233,10 +253,10 @@ export class SmartTableComponent
       roleUser: 'rh',
       value: this.selectedItem
     };
-    this.service.updatePreferences(preference); // synchroniser les preferences
+    // this.service.updatePreferences(preference); // synchroniser les preferences
 
     // Envoyer les modification au backend
-    this.service.updateSettings(this.settingsOrigine);
+    // this.service.updateSettings(this.settingsOrigine);
   }
 
   hideColomnId(): void {
@@ -253,19 +273,18 @@ export class SmartTableComponent
     // console.log("APPEL de l'evenement ngOnChanges() ", changes);
   }
 
-
   appliquerLesFiltres() {
     // console.log(" --- appliquerLesFiltres() ---- ");
 
     const filtersArray = this.columnsArrayOfObjects.map(col => {
 
-      let columnId = col.key;
+      const columnId = col.key;
       let filtreValue: string;
 
       if (this.settingsOrigine.columns[col.key].filterData) {
         filtreValue = this.settingsOrigine.columns[col.key].filterData;
-      }else{
-        filtreValue = "";
+      } else {
+        filtreValue = '';
       }
 
       // console.log(" columnId : " + columnId + " ==== filtreValue : " + filtreValue);
@@ -313,6 +332,10 @@ export class SmartTableComponent
     }
   }
 
+  sourieSurLigne(event) {
+    // console.log('EVENT ', event);
+  }
+
   onCreateConfirm(event) {
     if (window.confirm('Are you sure you want to create?')) {
       event.newData.name += ' + added in code';
@@ -320,6 +343,38 @@ export class SmartTableComponent
     } else {
       event.confirm.reject();
     }
+  }
+
+  savePreferences() {
+    console.log(" Filtre & Sort : ", this.source.getFilteredAndSorted());
+
+    const preference: any = {
+      idTable: 1,
+      idUser: 1,
+      roleUser: 'rh',
+      preferences : [
+        {
+          preferenceType: 'PREF_VISIBILITY',
+          values: this.selectedItem
+        },
+        {
+          preferenceType: 'PREF_ORDER',
+          values: this.selectedItem2
+        },
+        {
+          preferenceType: 'PREF_FILTER',
+          values: this.searchLabels
+        },
+        {
+          preferenceType: 'PREF_SORT',
+          values: this.searchLabels
+        }
+      ]
+    };
+
+    this.service.updatePreferencesObject(preference); // synchroniser les preferences
+
+    alert(` Vos prefereces En été sauvegarder `);
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -342,17 +397,61 @@ export class SmartTableComponent
     this.settings = Object.assign({}, this.settings, {
       columns: newColumnsToShow
     });
-    let selectedItem2 = Object.keys(newColumnsToShow);
+    this.selectedItem2 = Object.keys(newColumnsToShow);
     const preference: any = {
       idTable: 1,
       idUser: 1,
       preferneceType: 'PREF_ORDER',
       roleUser: 'rh',
-      value: selectedItem2
+      value: this.selectedItem2
     };
-    this.service.updatePreferences(preference); // synchroniser les preferences
+    // this.service.updatePreferences(preference); // synchroniser les preferences
     // syncroniser les changement avec le backend
-    this.service.updateSettings(this.settings);
+    // this.service.updateSettings(this.settings);
+  }
+
+  onCustomAction(event) {
+
+    console.log("EVENT : ", event);
+
+    if (event.action === "view") {
+      this.windowService.open(
+          this.contentTemplate,
+          {
+            title: 'Mini CV VCGP',
+              context: {
+                text: 'some text to pass into template',
+                nom: `${event.data.nom}`,
+                prenom1: `${event.data.prenom1}`,
+                img: `${event.data.img}`,
+                dateDeNaissance: `${event.data.dateDeNaissance}`,
+                paysDeNaissance: `${event.data.paysDeNaissance}`,
+                genre: `${event.data.genre}`,
+                fonctionOfficiel: `${event.data.fonctionOfficiel}`,
+                numeroDeTelephoneParDefaut: `${event.data.numeroDeTelephoneParDefaut}`,
+                typeDeContrat: `${event.data.typeDeContrat}`,
+                adresseEmailParDefaut: `${event.data.adresseEmailParDefaut}`,
+                societeDAppartenance: `${event.data.societeDAppartenance}`,
+                handicap: `${event.data.handicap}`,
+                nomPersonneEnCasDurgence: `${event.data.nomPersonneEnCasDurgence}`,
+              }
+          },
+      );
+    } else {
+      // alert(`Custom event '${event.action}' fired on row №: ${event.data.idVinci}`);
+      // const activateOtherTab = true;
+      // this.service.updateActiveTab(activateOtherTab);
+      this.idCollaborateur.emit(event.data.idVinci);
+    }
+
+
+    // this.dialogService.open( ShowcaseDialogComponent, {
+      //   context: {
+      //     title: 'This is a title passed to the dialog component',
+      //   },
+      // });
+
+    // this.dialogService.open(dialog, { context: 'this is some additional data passed to dialog' });
   }
 
   ngOnDestroy(): void {

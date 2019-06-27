@@ -1,12 +1,16 @@
-import { OnInit, OnDestroy, ComponentFactoryResolver, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import { OnInit, OnDestroy, ComponentFactoryResolver, OnChanges, SimpleChanges, AfterViewInit, TemplateRef, EventEmitter } from '@angular/core';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { LocalDataSource } from 'ng2-smart-table';
 import { SmartTableService } from '../smart-table.service';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { NbWindowService } from '@nebular/theme';
+import { Router } from '@angular/router';
 export declare class SmartTableComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
     service: SmartTableService;
     private componentFactoryResolver;
+    private windowService;
+    private router;
     config: any;
     datafromServer: any[];
     ng2smart: any;
@@ -22,11 +26,18 @@ export declare class SmartTableComponent implements OnInit, OnDestroy, OnChanges
     vinciSettings: any;
     titlesArray: any[];
     columnsArrayOfObjects: any[];
+    disable: boolean;
     filterValues: string[];
+    searchLabels: string[];
+    ValueFilters: [string];
+    ArrayFilters: Array<string>;
+    selectedItem2: string[];
     panelOpenState: boolean;
     selectedSetting: any[];
+    idCollaborateur: EventEmitter<string>;
+    contentTemplate: TemplateRef<any>;
     source: LocalDataSource;
-    constructor(service: SmartTableService, componentFactoryResolver: ComponentFactoryResolver, http: HttpClient);
+    constructor(service: SmartTableService, componentFactoryResolver: ComponentFactoryResolver, http: HttpClient, windowService: NbWindowService, router: Router);
     ngOnInit(): void;
     ngAfterViewInit(): void;
     selectColomns(columnsToShow: any): void;
@@ -36,7 +47,10 @@ export declare class SmartTableComponent implements OnInit, OnDestroy, OnChanges
     onSearch(query?: string): void;
     onDeleteConfirm(event: any): void;
     onSaveConfirm(event: any): void;
+    sourieSurLigne(event: any): void;
     onCreateConfirm(event: any): void;
+    savePreferences(): void;
     drop(event: CdkDragDrop<string[]>): void;
+    onCustomAction(event: any): void;
     ngOnDestroy(): void;
 }

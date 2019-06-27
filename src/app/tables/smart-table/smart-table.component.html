@@ -17,6 +17,8 @@
       </div>
     </nb-card> -->
 
+    <button nbButton shape="semi-round" status="info" (click)="savePreferences()">Sauvegarder Preferences</button>
+
     <div class="vc-accordion">
 
       <nb-accordion multi>
@@ -30,14 +32,15 @@
               <nb-card-header>Selection Colonnes</nb-card-header>
               <nb-card-body>
                 <nb-select cdkDropList multiple placeholder="Multiple Select" class="columns-selection"
-                  (selectedChange)="selectColomns($event)" [(selected)]="selectedItem" shape="round" size="small">
+                  (selectedChange)="selectColomns($event)" [(selected)]="selectedItem " shape="round" size="small">
                   <nb-select-label>
                     Selectioner les colonnes à afficher
                   </nb-select-label>
-                  <nb-option *ngFor="let col of columns | keyvalue" value="{{col.key}}">
+                  <nb-option *ngFor="let col of columns | keyvalue" value="{{col.key}}"
+                    [disabled]="selectedItem.length > 8 && !selectedItem.includes(col.key)">
                     {{col.value.title}}
                   </nb-option>
-                  <!-- <nb-option *ngFor="let col of columnsArrayOfObjects" value="{{col.key}}">
+                  <!-- <nb-option *ngFor="let col of columnsArrayOfObje cts" value="{{col.key}}">
                     {{col.title}}
                   </nb-option> -->
                 </nb-select>
@@ -83,13 +86,88 @@
       <!-- <input type="text" nbInput fieldSize="large" #search class="search" placeholder="Search..."
         (keydown.enter)="onSearch(search.value)"> -->
     </nb-card>
+    <!-- <mat-slide-toggle>Slide me!</mat-slide-toggle> -->
+    <!-- <ngx-switcher></ngx-switcher> -->
+    <!-- <ngx-switcher
+      [firstValue]="RTL"
+      [secondValue]="LTR"
+      [firstValueLabel]="'RTL'"
+      [secondValueLabel]="'LTR'"
+      [vertical]="false"
+    >
+    </ngx-switcher> -->
+    <ng-template #contentTemplate let-data>
+              <div align="right" style="margin: 1%"><img   src="{{data.img}}" alt="image collaborateur"></div>
+
+              <strong> {{ data.nom || " Nom " }} {{ data.prenom1 || " Prénom " }} </strong>
+              <h3> {{ columns.dateDeNaissance?.title || " Date de Naissance " }} : {{ data.dateDeNaissance || '--' }}</h3>
+              <p> Née le <strong> {{ data.dateDeNaissance || "--" }}</strong> à <strong> {{ data.paysDeNaissance  || "--" }} </strong></p>
+              <label> {{ columns.genre?.title || "Genre" }} : </label><strong> {{ data.genre || "--" }} </strong>
+              <br><br>
+              <label>  {{ columns.fonctionOfficiel?.title || " Fonction officielle " }} : </label><strong>
+                {{ data.fonctionOfficiel || "--" }} </strong>
+              <br><br>
+              <label>  {{ columns.typeDeContrat?.title || " Type de contrat " }} : </label><strong>
+                {{ data.typeDeContrat || "--" }} </strong>
+              <br><br>
+              <label> {{ columns.numeroDeTelephoneParDefaut?.title || " Tél par défault " }} : </label><strong>
+                {{ data.numeroDeTelephoneParDefaut || "--" }} </strong>
+              <br><br>
+              <label>  {{ columns.adresseEmailParDefaut?.title || " Email par défault " }} : </label><strong>
+                {{ data.adresseEmailParDefaut || "--" }} </strong>
+              <br><br>
+              <label>  {{ columns.societeDAppartenance?.title || " Société de d'appartenace " }} :</label><strong>
+                {{ data.societeDAppartenance || "--" }} </strong>
+              <br><br>
+              <label>  {{ columns.handicap?.title || " Handicap " }} : </label><strong> {{ data.handicap || "--" }}</strong>
+              <br><br>
+              <!-- <label> Contactd'urgence {{ columns.nomPersonneEnCasDurgence.title }}      </label><strong> {{ data.nomPersonneEnCasDurgence }} </strong> -->
+              <label> Contactd'urgence : </label><strong> {{ data.nomPersonneEnCasDurgence || "--" }} </strong>
+              <br><br>
+
+
+      <!-- <div class="col-lg-12">
+
+        <div align="right">
+
+          <img class="col-lg-3" src="{{data.img}}" alt="image collaborateur">
+        </div>
+        <div class="col-lg-12">
+            <strong> {{ data.nom || "--" }} {{ data.prenom1 || "--" }} </strong>
+          <h3> {{ columns.dateDeNaissance.title || "--" }} : {{ data.dateDeNaissance || '--' }}</h3>
+          <p> Née le {{ data.dateDeNaissance || "--" }} à {{ data.paysDeNaissance  || "--" }}</p>
+          <label> {{ columns.genre.title || "--" }} : </label><strong> {{ data.genre || "--" }} </strong>
+          <br><br>
+          <label> Fonction officielle {{ columns.fonctionOfficiel.title || "--" }} : </label><strong>
+            {{ data.fonctionOfficiel || "--" }} </strong>
+          <br><br>
+          <label> Type de contrat {{ columns.typeDeContrat.title || "--" }} : </label><strong>
+            {{ data.typeDeContrat || "--" }} </strong>
+          <br><br>
+          <label> Tél par défault {{ columns.numeroDeTelephoneParDefaut.title || "--" }} : </label><strong>
+            {{ data.numeroDeTelephoneParDefaut || "--" }} </strong>
+          <br><br>
+          <label> Email par défault {{ columns.adresseEmailParDefaut.title || "--" }} : </label><strong>
+            {{ data.adresseEmailParDefaut || "--" }} </strong>
+          <br><br>
+          <label> Société de d'appartenace {{ columns.societeDAppartenance.title || "--" }} :</label><strong>
+            {{ data.societeDAppartenance || "--" }} </strong>
+          <br><br>
+          <label> Handicap {{ columns.handicap.title || "--" }} : </label><strong> {{ data.handicap || "--" }}</strong>
+          <br><br>
+     <label> Contactd'urgence {{ columns.nomPersonneEnCasDurgence.title }}      </label><strong> {{ data.nomPersonneEnCasDurgence }} </strong>
+          <label> Contactd'urgence : </label><strong> {{ data.nomPersonneEnCasDurgence || "--" }} </strong>
+          <br><br>
+        </div>
+      </div> -->
+    </ng-template>
+
 
     <ng2-smart-table [(settings)]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)"
-      (editConfirm)="onSaveConfirm($event)" (createConfirm)="onCreateConfirm($event)">
+      (editConfirm)="onSaveConfirm($event)" (createConfirm)="onCreateConfirm($event)"
+      (rowHover)="sourieSurLigne($event)" (custom)="onCustomAction($event)" (userRowSelect)="onCustomAction($event)">
     </ng2-smart-table>
 
   </nb-card-body>
 
 </nb-card>
-
-

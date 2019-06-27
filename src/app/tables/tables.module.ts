@@ -8,7 +8,7 @@ import { TablesRoutingModule, routedComponents } from './tables-routing.module';
 import { SmartTableService } from './smart-table.service';
 import { SmartTableComponent } from './smart-table/smart-table.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { CustomRenderComponent } from './smart-table/custom-render.component';
+import { CustomRenderComponent } from '../shared/renderComponents/custom-render.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -21,14 +21,15 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [
     CommonModule,
     FormsModule,
-    NbCardModule,
     TablesRoutingModule,
     DragDropModule,
-    Ng2CompleterModule,
+    HttpClientModule,
     MatExpansionModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    NbCardModule,
+    Ng2CompleterModule,
     Ng2SmartTableModule,
     NbCardModule,
     NbButtonModule,
@@ -40,8 +41,7 @@ import { HttpClientModule } from '@angular/common/http';
     NbLayoutModule,
     NbSelectModule,
     NbCheckboxModule,
-    NbAccordionModule,
-    HttpClientModule
+    NbAccordionModule
   ],
   providers: [SmartTableService],
   declarations: [...routedComponents, CustomRenderComponent],

@@ -3,12 +3,29 @@
 <nb-layout>
   <nb-layout-column>
 
+    <nb-tabset fullWidth (changeTab)="onChangedTab($event)">
+      <nb-tab tabTitle="Liste Collaborateurs"
+              badgeText="new"
+              badgeStatus="danger"
+              [active]= listActive >
+        <generic-datagrid  *ngIf="settings" [datafromServer]="data" [config]="settings" (idCollaborateur)="getIdCollaborateur($event)"></generic-datagrid>
+      </nb-tab>
+      <nb-tab tabTitle="Dossier Collaborateur"
+              badgeText="12"
+              badgePosition="bottom right"
+              badgeStatus="warning"
+              [active]= dossierActive >
+        <h3><strong>Dossier Collaborateur orders</strong></h3>
+        <app-dossier-collaborateur></app-dossier-collaborateur>
 
-    <!-- <generic-datagrid></generic-datagrid> -->
+        idcollaborateur : {{ idcollaborateur }}
+      </nb-tab>
+    </nb-tabset>
 
-    <generic-datagrid  *ngIf="settings" [datafromServer]="data" [config]="settings"></generic-datagrid>
-
+    <!-- <generic-datagrid  *ngIf="settings" [datafromServer]="data" [config]="settings"></generic-datagrid> -->
+    <!-- <generic-datagrid [datafromServer]="data" [config]="settings"></generic-datagrid> -->
     <!-- <generic-datagrid [datafromServer]="data"></generic-datagrid> -->
+    <!-- <generic-datagrid></generic-datagrid> -->
     <!-- <router-outlet></router-outlet> -->
 
   </nb-layout-column>
