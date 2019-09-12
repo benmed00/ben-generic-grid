@@ -1,5 +1,29 @@
 # Tableau pour afficher les données a fin de simplifier les recherche manuel perssonaliser
 
+==> npm package :
+
+https://www.npmjs.com/package/generic-components-dxc
+
+npm i generic-components-dxc
+
+https://material.angular.io/
+https://angular.io/
+https://akveo.github.io/
+https://akveo.github.io/nebular/
+https://akveo.github.io/ng2-smart-table/#/
+http://akveo.github.io/ngx-admin/
+https://ng-bootstrap.github.io/#/home
+https://nodejs.org/en/
+https://cli.angular.io/
+
+
+https://github.com/akveo/ng2-smart-table
+https://github.com/akveo/ngx-admin
+https://github.com/akveo/nebular
+https://github.com/akveo/eva-icons
+https://github.com/angular/angular
+https://github.com/angular/angular-cli
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.8.
 
 ## Development server
