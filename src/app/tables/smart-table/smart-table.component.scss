@@ -86,3 +86,30 @@
  .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
  }
+
+
+.action-column {
+  position: absolute; top: 0.2em; right: 0.2em;
+}
+
+::ng-deep tr td.ng2-smart-actions{
+  height: 100%;
+}
+::ng-deep tr td.ng2-smart-actions a.ng2-smart-action-custom-custom{
+  width: 50% !important;
+  float: left;
+}
+
+// ::ng-deep .hide-action td.ng2-smart-actions a i.nb-plus{
+//   display: none;
+// }
+
+// ::ng-deep tr.supprimer i.nb-checkmark{display:none;}
+// ::ng-deep tr.editer i.nb-edit{display:none;}
+// ::ng-deep tr.ajouter i.nb-plus{display:none;}
+
+::ng-deep tr.consulterModifier i.nb-plus{display:none;}
+::ng-deep tr.creerConsulter i.nb-edit{display:none;}
+
+::ng-deep tr.creer i.nb-edit{display:none;}
+::ng-deep tr.creer i.nb-search{display:none;}
