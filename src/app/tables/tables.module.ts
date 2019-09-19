@@ -3,7 +3,7 @@ import { Ng2SmartTableModule } from "ng2-smart-table";
 
 
 
-import { NbThemeModule, NbCardModule, NbButtonModule, NbLayoutModule, NbSelectModule, NbCheckboxModule, NbAccordionModule } from "@nebular/theme";
+import { NbThemeModule, NbCardModule, NbButtonModule, NbLayoutModule, NbSelectModule, NbCheckboxModule, NbAccordionModule, NbWindowModule } from "@nebular/theme";
 import { TablesRoutingModule, routedComponents } from './tables-routing.module';
 import { SmartTableService } from './smart-table.service';
 import { SmartTableComponent } from './smart-table/smart-table.component';
@@ -16,6 +16,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import { Ng2CompleterModule } from "ng2-completer";
 import {MatExpansionModule, MatInputModule, MatSelectModule, MatFormFieldModule} from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
+import { NbWindowComponent } from '@nebular/theme/components/window/window.component';
 // import { MatFormFieldModule } from '@angular/material/form-field';
 @NgModule({
   imports: [
@@ -41,12 +42,14 @@ import { HttpClientModule } from '@angular/common/http';
     NbLayoutModule,
     NbSelectModule,
     NbCheckboxModule,
-    NbAccordionModule
+    NbAccordionModule,
+    NbWindowModule,
+
   ],
   providers: [SmartTableService],
   declarations: [...routedComponents, CustomRenderComponent],
   entryComponents: [
-    CustomRenderComponent
+    CustomRenderComponent, NbWindowComponent
   ],
 
   exports: [SmartTableComponent]

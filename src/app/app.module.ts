@@ -8,21 +8,19 @@ import {
   NbButtonModule,
   NbWindowModule,
   NbTabsetModule,
-  } from "@nebular/theme";
+  } from '@nebular/theme';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TablesModule } from './tables/tables.module';
 import { ButtonViewComponent } from './shared/renderComponents/button-view.component';
-import { config } from 'process';
-import { DossierCollaborateurComponent } from './dossier-collaborateur/dossier-collaborateur.component';
-import { ConsulterCollaborateurComponent } from './consulter-collaborateur/consulter-collaborateur.component';
 import { ShowcaseDialogComponent } from './shared/renderComponents/showcase-dialog.component';
-import { CustomRenderComponent } from './shared/renderComponents/custom-render.component';
+import { NbWindowComponent } from '@nebular/theme/components/window/window.component';
+// import { DisplayUserModule } from './userDisplayUi/display-user.module';
 // import { config } from 'rxjs';
 
 @NgModule({
-  declarations: [AppComponent, ButtonViewComponent, DossierCollaborateurComponent, ConsulterCollaborateurComponent, ShowcaseDialogComponent],
+  declarations: [AppComponent, ButtonViewComponent, ShowcaseDialogComponent],
   imports: [
     TablesModule,
     BrowserModule,
@@ -37,7 +35,7 @@ import { CustomRenderComponent } from './shared/renderComponents/custom-render.c
     NbWindowModule.forRoot(),
   ],
   providers: [],
-  entryComponents: [ ButtonViewComponent],
+  entryComponents: [ ButtonViewComponent, NbWindowComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

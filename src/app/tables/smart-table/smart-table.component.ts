@@ -19,7 +19,7 @@ import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
 import { CustomRenderComponent } from '../../shared/renderComponents/custom-render.component';
 import { SmartTableData, SmartTableService } from '../smart-table.service';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { log, debug } from 'util';
+import { log, debug, isNullOrUndefined } from 'util';
 // import { settings } from "cluster";
 // import { CONFIG_SETTINGS } from "assets/utils/settings";explorer
 // import { CONFIG_SETTINGS } from "assets/utils/settings";
@@ -28,6 +28,9 @@ import { Preferences } from '../../../app/shared/enum/preferences_model';
 import { $$ } from 'protractor';
 import { NbDialogService, NbWindowService } from '@nebular/theme';
 import { Router } from '@angular/router';
+import { ViewEncapsulation } from '@angular/core';
+
+declare var Liferay : any;
 @Component({
   selector: 'generic-datagrid',
   styleUrls: ['./smart-table.component.scss'],
@@ -54,7 +57,7 @@ export class SmartTableComponent
   titlesArray = [];
   columnsArrayOfObjects = [];
 
-  disable :boolean = false;
+  disable: boolean = false;
 
 /* Variables meants for ************/
   filterValues: string[];
@@ -68,7 +71,9 @@ export class SmartTableComponent
 
   selectedSetting: any[];
   // source: ServerDataSource;
-  @Output() idCollaborateur = new EventEmitter<string>();
+  @Output() dataEvent = new EventEmitter<any>();
+  @Output() ligneData = new EventEmitter<any>();
+  @Output() eventPreference = new EventEmitter<any>();
 
   @ViewChild('contentTemplate') contentTemplate: TemplateRef<any>;
   // @ViewChild('contentTemplate', { static: false }) contentTemplate: TemplateRef<any>;
@@ -147,7 +152,28 @@ export class SmartTableComponent
       this.appliquerLesFiltres();
     }
 
+    // let preference: any = {
+    //   preferences : [
+    //     {
+    //       preferenceType: 'PREF_VISIBILITY',
+    //       values: this.selectedItem
+    //     },
+    //     {
+    //       preferenceType: 'PREF_ORDER',
+    //       values: this.selectedItem2
+    //     },
+    //     {
+    //       preferenceType: 'PREF_FILTER',
+    //       values: this.searchLabels
+    //     },
+    //     {
+    //       preferenceType: 'PREF_SORT',
+    //       values: ['']
+    //     }
+    //   ]
+    // };
 
+    // this.eventPreference.emit(preference);
 
     /* Gerer la preferene sauvegarder les filtres ****************************************/
 
@@ -155,6 +181,7 @@ export class SmartTableComponent
     // TO-Do : unsubscibe all the subscriptions
 
     this.source.onChanged().subscribe(filterValue => {
+      // console.log(" Evenement On Changed => Filter");
 
       for (let index = 0; index < filterValue.filter.filters.length; index++) {
         // console.log(" Filters Value : ", filterValue.filter.filters[index]);
@@ -215,11 +242,12 @@ export class SmartTableComponent
     this.selectedItem = columnsToShow;
 
     const columnsArrayOfObjects1 = [];
+
     this.selectedItem.forEach((element, index) => {
       // console.log(" index : " + index + " element : " + element);
       columnsArrayOfObjects1.splice(index, 0, {
         key: element,
-        title: this.columns[element].title
+        title: newColumnsToShow[element].title
       });
     });
 
@@ -270,30 +298,24 @@ export class SmartTableComponent
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // console.log( " NG ON CHANGE " );
     // console.log("APPEL de l'evenement ngOnChanges() ", changes);
   }
 
   appliquerLesFiltres() {
-    // console.log(" --- appliquerLesFiltres() ---- ");
+    const filtersArray = [];
+    this.columnsArrayOfObjects.forEach(element => {
 
-    const filtersArray = this.columnsArrayOfObjects.map(col => {
-
-      const columnId = col.key;
-      let filtreValue: string;
-
-      if (this.settingsOrigine.columns[col.key].filterData) {
-        filtreValue = this.settingsOrigine.columns[col.key].filterData;
-      } else {
-        filtreValue = '';
+      const filterData: string = this.settingsOrigine.columns[element.key].filterData;
+      if (filterData !== undefined &&  filterData.length > 0) {
+        filtersArray.push({ field: element.key, search: filterData });
       }
-
-      // console.log(" columnId : " + columnId + " ==== filtreValue : " + filtreValue);
-      return { field: columnId, search: filtreValue };
-
     });
-    // console.log(" filtersArray : ", filtersArray);
 
-    this.source.setFilter(filtersArray, false);
+    if (filtersArray.length > 0){
+      this.source.setFilter(filtersArray, false);
+    }
+
   }
 
   onSearch(query: string = '') {
@@ -346,12 +368,19 @@ export class SmartTableComponent
   }
 
   savePreferences() {
-    console.log(" Filtre & Sort : ", this.source.getFilteredAndSorted());
 
+    // console.log(" Filtre & Sort : ", this.source.getFilteredAndSorted());
+
+    let userId = 1;
+    let effectifRole = "rh";
+    if (typeof Liferay !== 'undefined') {
+      userId = Liferay.ThemeDisplay.getUserId();
+      effectifRole = Liferay['effectifRole'];
+    }
     const preference: any = {
       idTable: 1,
-      idUser: 1,
-      roleUser: 'rh',
+      idUser: userId,
+      roleUser: effectifRole,
       preferences : [
         {
           preferenceType: 'PREF_VISIBILITY',
@@ -367,14 +396,36 @@ export class SmartTableComponent
         },
         {
           preferenceType: 'PREF_SORT',
-          values: this.searchLabels
+          values: ['']
         }
       ]
     };
 
-    this.service.updatePreferencesObject(preference); // synchroniser les preferences
+    let preferences: any = {
+      preferences : [
+        {
+          preferenceType: 'PREF_VISIBILITY',
+          values: this.selectedItem
+        },
+        {
+          preferenceType: 'PREF_ORDER',
+          values: this.selectedItem2
+        },
+        {
+          preferenceType: 'PREF_FILTER',
+          values: this.searchLabels
+        },
+        {
+          preferenceType: 'PREF_SORT',
+          values: ['']
+        }
+      ]
+    };
+    this.eventPreference.emit(preferences);
 
-    alert(` Vos prefereces En été sauvegarder `);
+    // this.service.updatePreferencesObject(preference); // synchroniser les preferences
+
+    // alert(` Vos préférences ont étés sauvegardées `);
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -393,7 +444,7 @@ export class SmartTableComponent
       },
       {}
     );
-    // cree un objet settings pour le reasiner au composant
+    // cree un objet settings pour le reasigner au composant
     this.settings = Object.assign({}, this.settings, {
       columns: newColumnsToShow
     });
@@ -410,40 +461,40 @@ export class SmartTableComponent
     // this.service.updateSettings(this.settings);
   }
 
-  onCustomAction(event) {
+  onCustomAction( event) {
 
-    console.log("EVENT : ", event);
-
-    if (event.action === "view") {
-      this.windowService.open(
-          this.contentTemplate,
-          {
-            title: 'Mini CV VCGP',
-              context: {
-                text: 'some text to pass into template',
-                nom: `${event.data.nom}`,
-                prenom1: `${event.data.prenom1}`,
-                img: `${event.data.img}`,
-                dateDeNaissance: `${event.data.dateDeNaissance}`,
-                paysDeNaissance: `${event.data.paysDeNaissance}`,
-                genre: `${event.data.genre}`,
-                fonctionOfficiel: `${event.data.fonctionOfficiel}`,
-                numeroDeTelephoneParDefaut: `${event.data.numeroDeTelephoneParDefaut}`,
-                typeDeContrat: `${event.data.typeDeContrat}`,
-                adresseEmailParDefaut: `${event.data.adresseEmailParDefaut}`,
-                societeDAppartenance: `${event.data.societeDAppartenance}`,
-                handicap: `${event.data.handicap}`,
-                nomPersonneEnCasDurgence: `${event.data.nomPersonneEnCasDurgence}`,
-              }
-          },
-      );
-    } else {
-      // alert(`Custom event '${event.action}' fired on row №: ${event.data.idVinci}`);
+    this.dataEvent.emit(event);
+    // console.log('EVENT : ', event);
+    // if (event.action === 'view') {
+    //   this.dataEvent.emit(event);
+      // this.windowService.open(
+      //     this.contentTemplate,
+      //     {
+      //       title: ' Mini CV ',
+      //         context: {
+      //           text: 'some text to pass into template',
+      //           nom: `${event.data.nom}`,
+      //           prenom1: `${event.data.prenom1}`,
+      //           photo: `${event.data.photo}`,
+      //           dateDeNaissance: `${event.data.dateDeNaissance}`,
+      //           paysDeNaissance: `${event.data.paysDeNaissance}`,
+      //           genre: `${event.data.genre}`,
+      //           fonctionOfficielle: `${event.data.fonctionOfficielle}`,
+      //           numeroDeTelephoneParDefaut: `${event.data.numeroDeTelephoneParDefaut}`,
+      //           typeDeContrat: `${event.data.typeDeContrat}`,
+      //           adresseEmailParDefaut: `${event.data.adresseEmailParDefaut}`,
+      //           societeDAppartenance: `${event.data.societeDAppartenance}`,
+      //           handicap: `${event.data.handicap}`,
+      //           nomPersonneEnCasDurgence: `${event.data.nomPersonneEnCasDurgence}`,
+      //         }
+      //     },
+      // );
+    // } else if (event.action === 'consulter') {
+      // alert(`Custom event '${event.action}' fired on row №: ${event.data.userId}`);
       // const activateOtherTab = true;
       // this.service.updateActiveTab(activateOtherTab);
-      this.idCollaborateur.emit(event.data.idVinci);
-    }
-
+      // this.dataEvent.emit(event);
+    // }
 
     // this.dialogService.open( ShowcaseDialogComponent, {
       //   context: {

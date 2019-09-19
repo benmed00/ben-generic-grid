@@ -1,7 +1,7 @@
 import { __decorate, __extends, __metadata, __spread } from 'tslib';
-import { Component, defineInjectable, inject, Injectable, Input, ViewChild, Output, TemplateRef, ComponentFactoryResolver, EventEmitter, NgModule } from '@angular/core';
+import { Component, ViewEncapsulation, defineInjectable, inject, Injectable, Input, ViewChild, Output, TemplateRef, ComponentFactoryResolver, EventEmitter, NgModule } from '@angular/core';
 import { LocalDataSource, Ng2SmartTableModule } from 'ng2-smart-table';
-import { NbWindowService, NbCardModule, NbButtonModule, NbThemeModule, NbLayoutModule, NbSelectModule, NbCheckboxModule, NbAccordionModule } from '@nebular/theme';
+import { NbWindowService, NbCardModule, NbButtonModule, NbThemeModule, NbLayoutModule, NbSelectModule, NbCheckboxModule, NbAccordionModule, NbWindowModule } from '@nebular/theme';
 import { Router, RouterModule } from '@angular/router';
 import { moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpHeaders, HttpClient, HttpClientModule } from '@angular/common/http';
@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Ng2CompleterModule } from 'ng2-completer';
 import { MatExpansionModule, MatFormFieldModule, MatInputModule, MatSelectModule } from '@angular/material';
+import { NbWindowComponent } from '@nebular/theme/components/window/window.component';
 
 var TablesComponent = /** @class */ (function () {
     function TablesComponent() {
@@ -19,7 +20,8 @@ var TablesComponent = /** @class */ (function () {
     TablesComponent = __decorate([
         Component({
             selector: 'app-tables',
-            template: "<router-outlet></router-outlet>"
+            template: "<router-outlet></router-outlet>",
+            encapsulation: ViewEncapsulation.Native
         })
     ], TablesComponent);
     return TablesComponent;
@@ -1199,7 +1201,9 @@ var SmartTableComponent = /** @class */ (function () {
         /* ********************************/
         this.panelOpenState = false;
         // source: ServerDataSource;
-        this.idCollaborateur = new EventEmitter();
+        this.dataEvent = new EventEmitter();
+        this.ligneData = new EventEmitter();
+        this.eventPreference = new EventEmitter();
         // @ViewChild('contentTemplate', { static: false }) contentTemplate: TemplateRef<any>;
         this.source = new LocalDataSource();
         // this.settingsOrigine = Object.assign({}, this.service.getSettings());
@@ -1254,10 +1258,32 @@ var SmartTableComponent = /** @class */ (function () {
         if (this.settingsOrigine) {
             this.appliquerLesFiltres();
         }
+        // let preference: any = {
+        //   preferences : [
+        //     {
+        //       preferenceType: 'PREF_VISIBILITY',
+        //       values: this.selectedItem
+        //     },
+        //     {
+        //       preferenceType: 'PREF_ORDER',
+        //       values: this.selectedItem2
+        //     },
+        //     {
+        //       preferenceType: 'PREF_FILTER',
+        //       values: this.searchLabels
+        //     },
+        //     {
+        //       preferenceType: 'PREF_SORT',
+        //       values: ['']
+        //     }
+        //   ]
+        // };
+        // this.eventPreference.emit(preference);
         /* Gerer la preferene sauvegarder les filtres ****************************************/
         // TO-Do : get the treatement out of the subscribe
         // TO-Do : unsubscibe all the subscriptions
         this.source.onChanged().subscribe(function (filterValue) {
+            // console.log(" Evenement On Changed => Filter");
             for (var index = 0; index < filterValue.filter.filters.length; index++) {
                 // console.log(" Filters Value : ", filterValue.filter.filters[index]);
                 _this.searchLabels[index] = filterValue.filter.filters[index].field + ':' + filterValue.filter.filters[index].search;
@@ -1304,7 +1330,7 @@ var SmartTableComponent = /** @class */ (function () {
             // console.log(" index : " + index + " element : " + element);
             columnsArrayOfObjects1.splice(index, 0, {
                 key: element,
-                title: _this.columns[element].title
+                title: newColumnsToShow[element].title
             });
         });
         // syncronisation entre le tablau DRAGUABLE et le composant SELECT
@@ -1335,7 +1361,7 @@ var SmartTableComponent = /** @class */ (function () {
         };
         // this.service.updatePreferences(preference); // synchroniser les preferences
         // Envoyer les modification au backend
-        this.service.updateSettings(this.settingsOrigine);
+        // this.service.updateSettings(this.settingsOrigine);
     };
     SmartTableComponent.prototype.hideColomnId = function () {
         // this.newSettings = {};
@@ -1347,25 +1373,21 @@ var SmartTableComponent = /** @class */ (function () {
         console.log('APPEL FUNCTION hideColumnId() ');
     };
     SmartTableComponent.prototype.ngOnChanges = function (changes) {
+        // console.log( " NG ON CHANGE " );
         // console.log("APPEL de l'evenement ngOnChanges() ", changes);
     };
     SmartTableComponent.prototype.appliquerLesFiltres = function () {
-        // console.log(" --- appliquerLesFiltres() ---- ");
         var _this = this;
-        var filtersArray = this.columnsArrayOfObjects.map(function (col) {
-            var columnId = col.key;
-            var filtreValue;
-            if (_this.settingsOrigine.columns[col.key].filterData) {
-                filtreValue = _this.settingsOrigine.columns[col.key].filterData;
+        var filtersArray = [];
+        this.columnsArrayOfObjects.forEach(function (element) {
+            var filterData = _this.settingsOrigine.columns[element.key].filterData;
+            if (filterData !== undefined && filterData.length > 0) {
+                filtersArray.push({ field: element.key, search: filterData });
             }
-            else {
-                filtreValue = '';
-            }
-            // console.log(" columnId : " + columnId + " ==== filtreValue : " + filtreValue);
-            return { field: columnId, search: filtreValue };
         });
-        // console.log(" filtersArray : ", filtersArray);
-        this.source.setFilter(filtersArray, false);
+        if (filtersArray.length > 0) {
+            this.source.setFilter(filtersArray, false);
+        }
     };
     SmartTableComponent.prototype.onSearch = function (query) {
         if (query === void 0) { query = ''; }
@@ -1412,11 +1434,17 @@ var SmartTableComponent = /** @class */ (function () {
         }
     };
     SmartTableComponent.prototype.savePreferences = function () {
-        console.log(" Filtre & Sort : ", this.source.getFilteredAndSorted());
+        // console.log(" Filtre & Sort : ", this.source.getFilteredAndSorted());
+        var userId = 1;
+        var effectifRole = "rh";
+        if (typeof Liferay !== 'undefined') {
+            userId = Liferay.ThemeDisplay.getUserId();
+            effectifRole = Liferay['effectifRole'];
+        }
         var preference = {
             idTable: 1,
-            idUser: 1,
-            roleUser: 'rh',
+            idUser: userId,
+            roleUser: effectifRole,
             preferences: [
                 {
                     preferenceType: 'PREF_VISIBILITY',
@@ -1432,12 +1460,33 @@ var SmartTableComponent = /** @class */ (function () {
                 },
                 {
                     preferenceType: 'PREF_SORT',
-                    values: this.searchLabels
+                    values: ['']
                 }
             ]
         };
-        this.service.updatePreferencesObject(preference); // synchroniser les preferences
-        alert(" Vos prefereces En \u00E9t\u00E9 sauvegarder ");
+        var preferences = {
+            preferences: [
+                {
+                    preferenceType: 'PREF_VISIBILITY',
+                    values: this.selectedItem
+                },
+                {
+                    preferenceType: 'PREF_ORDER',
+                    values: this.selectedItem2
+                },
+                {
+                    preferenceType: 'PREF_FILTER',
+                    values: this.searchLabels
+                },
+                {
+                    preferenceType: 'PREF_SORT',
+                    values: ['']
+                }
+            ]
+        };
+        this.eventPreference.emit(preferences);
+        // this.service.updatePreferencesObject(preference); // synchroniser les preferences
+        // alert(` Vos préférences ont étés sauvegardées `);
     };
     SmartTableComponent.prototype.drop = function (event) {
         var _this = this;
@@ -1449,7 +1498,7 @@ var SmartTableComponent = /** @class */ (function () {
             newColumnsObject[arrayObject.key] = _this.columns[arrayObject.key];
             return newColumnsObject;
         }, {});
-        // cree un objet settings pour le reasiner au composant
+        // cree un objet settings pour le reasigner au composant
         this.settings = Object.assign({}, this.settings, {
             columns: newColumnsToShow
         });
@@ -1466,31 +1515,38 @@ var SmartTableComponent = /** @class */ (function () {
         // this.service.updateSettings(this.settings);
     };
     SmartTableComponent.prototype.onCustomAction = function (event) {
-        console.log("EVENT : ", event);
-        if (event.action === "view") {
-            this.windowService.open(this.contentTemplate, {
-                title: 'Mini CV VCGP',
-                context: {
-                    text: 'some text to pass into template',
-                    dateDeNaissance: "" + event.data.dateDeNaissance,
-                    paysDeNaissance: "" + event.data.paysDeNaissance,
-                    genre: "" + event.data.genre,
-                    fonctionOfficiel: "" + event.data.fonctionOfficiel,
-                    numeroDeTelephoneParDefaut: "" + event.data.numeroDeTelephoneParDefaut,
-                    typeDeContrat: "" + event.data.typeDeContrat,
-                    adresseEmailParDefaut: "" + event.data.adresseEmailParDefaut,
-                    societeDAppartenance: "" + event.data.societeDAppartenance,
-                    handicap: "" + event.data.handicap,
-                    nomPersonneEnCasDurgence: "" + event.data.nomPersonneEnCasDurgence,
-                }
-            });
-        }
-        else {
-            // alert(`Custom event '${event.action}' fired on row №: ${event.data.idVinci}`);
-            // const activateOtherTab = true;
-            // this.service.updateActiveTab(activateOtherTab);
-            this.idCollaborateur.emit(event.data.idVinci);
-        }
+        this.dataEvent.emit(event);
+        // console.log('EVENT : ', event);
+        // if (event.action === 'view') {
+        //   this.dataEvent.emit(event);
+        // this.windowService.open(
+        //     this.contentTemplate,
+        //     {
+        //       title: ' Mini CV ',
+        //         context: {
+        //           text: 'some text to pass into template',
+        //           nom: `${event.data.nom}`,
+        //           prenom1: `${event.data.prenom1}`,
+        //           photo: `${event.data.photo}`,
+        //           dateDeNaissance: `${event.data.dateDeNaissance}`,
+        //           paysDeNaissance: `${event.data.paysDeNaissance}`,
+        //           genre: `${event.data.genre}`,
+        //           fonctionOfficielle: `${event.data.fonctionOfficielle}`,
+        //           numeroDeTelephoneParDefaut: `${event.data.numeroDeTelephoneParDefaut}`,
+        //           typeDeContrat: `${event.data.typeDeContrat}`,
+        //           adresseEmailParDefaut: `${event.data.adresseEmailParDefaut}`,
+        //           societeDAppartenance: `${event.data.societeDAppartenance}`,
+        //           handicap: `${event.data.handicap}`,
+        //           nomPersonneEnCasDurgence: `${event.data.nomPersonneEnCasDurgence}`,
+        //         }
+        //     },
+        // );
+        // } else if (event.action === 'consulter') {
+        // alert(`Custom event '${event.action}' fired on row №: ${event.data.userId}`);
+        // const activateOtherTab = true;
+        // this.service.updateActiveTab(activateOtherTab);
+        // this.dataEvent.emit(event);
+        // }
         // this.dialogService.open( ShowcaseDialogComponent, {
         //   context: {
         //     title: 'This is a title passed to the dialog component',
@@ -1516,7 +1572,15 @@ var SmartTableComponent = /** @class */ (function () {
     __decorate([
         Output(),
         __metadata("design:type", Object)
-    ], SmartTableComponent.prototype, "idCollaborateur", void 0);
+    ], SmartTableComponent.prototype, "dataEvent", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], SmartTableComponent.prototype, "ligneData", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], SmartTableComponent.prototype, "eventPreference", void 0);
     __decorate([
         ViewChild('contentTemplate'),
         __metadata("design:type", TemplateRef)
@@ -1524,10 +1588,10 @@ var SmartTableComponent = /** @class */ (function () {
     SmartTableComponent = __decorate([
         Component({
             selector: 'generic-datagrid',
-            template: "<nb-card>\r\n\r\n  <nb-card-header>\r\n\r\n    <!-- <nb-card>\r\n      <h1> Generic Data-Grid <br></h1>\r\n    </nb-card>\r\n\r\n   {{ settingsOrigine | json }}\r\n\r\n    <nb-card>\r\n      <div class=\"search-input\">\r\n\r\n        <button nbButton status=\"success\">EXCEL</button>\r\n        <button nbButton status=\"danger\">PDF</button>\r\n\r\n      </div>\r\n    </nb-card> -->\r\n\r\n    <button nbButton shape=\"semi-round\" status=\"info\" (click)=\"savePreferences()\">Sauvegarder Preferences</button>\r\n\r\n    <div class=\"vc-accordion\">\r\n\r\n      <nb-accordion multi>\r\n        <nb-accordion-item>\r\n          <nb-accordion-item-header>\r\n            Mes Preferences\r\n          </nb-accordion-item-header>\r\n          <nb-accordion-item-body>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Selection Colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <nb-select\r\n                  cdkDropList\r\n                  multiple\r\n                  placeholder=\"Multiple Select\"\r\n                  class=\"columns-selection\"\r\n                  (selectedChange)=\"selectColomns($event)\"\r\n                  [(selected)]=\"selectedItem \"\r\n                  shape=\"round\"\r\n                  size=\"small\"\r\n                  >\r\n                  <nb-select-label>\r\n                    Selectioner les colonnes \u00E0 afficher\r\n                  </nb-select-label>\r\n                  <nb-option *ngFor=\"let col of columns | keyvalue\" value=\"{{col.key}}\" [disabled]=\"selectedItem.length > 8 && !selectedItem.includes(col.key)\">\r\n                    {{col.value.title}}\r\n                  </nb-option>\r\n                  <!-- <nb-option *ngFor=\"let col of columnsArrayOfObje cts\" value=\"{{col.key}}\">\r\n                    {{col.title}}\r\n                  </nb-option> -->\r\n                </nb-select>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n            <nb-card>\r\n              <nb-card-header>Trie des colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-card-body>\r\n            </nb-card>\r\n\r\n          </nb-accordion-item-body>\r\n        </nb-accordion-item>\r\n\r\n        <!-- <nb-accordion-item>\r\n              <nb-accordion-item-header>\r\n                Trie des colonnes\r\n              </nb-accordion-item-header>\r\n              <nb-accordion-item-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>{{item.title}}</div>\r\n                </div>\r\n              </nb-accordion-item-body>\r\n            </nb-accordion-item> -->\r\n\r\n      </nb-accordion>\r\n\r\n    </div>\r\n\r\n    <!-- <button nbButton outline status=\"primary\" (click)=\"hideColomnId()\">iddd</button> -->\r\n    <!-- <button nbButton outline status=\"primary\" (click)=\"appliquerLesFiltres()\">appliquer Les Filtres</button> -->\r\n  </nb-card-header>\r\n\r\n  <nb-card-body>\r\n\r\n    <nb-card>\r\n      <!-- <input type=\"text\" nbInput fieldSize=\"large\" #search class=\"search\" placeholder=\"Search...\"\r\n        (keydown.enter)=\"onSearch(search.value)\"> -->\r\n    </nb-card>\r\n    <!-- <mat-slide-toggle>Slide me!</mat-slide-toggle> -->\r\n    <!-- <ngx-switcher></ngx-switcher> -->\r\n    <!-- <ngx-switcher\r\n      [firstValue]=\"RTL\"\r\n      [secondValue]=\"LTR\"\r\n      [firstValueLabel]=\"'RTL'\"\r\n      [secondValueLabel]=\"'LTR'\"\r\n      [vertical]=\"false\"\r\n    >\r\n    </ngx-switcher> -->\r\n    <ng-template #contentTemplate let-data>\r\n\r\n      <h3> {{ columns.dateDeNaissance.title }} :  {{ data.dateDeNaissance || '--' }}</h3>\r\n\r\n       <p> N\u00E9e le {{ data.dateDeNaissance }} \u00E0 {{ data.paysDeNaissance  }}</p>\r\n\r\n      <label> {{ columns.genre.title }} :                                       </label><strong> {{ data.genre || \"--\" }} </strong>\r\n      <br><br>\r\n      <label> fonction officielle  {{ columns.fonctionOfficiel.title }}  :       </label><strong> {{ data.fonctionOfficiel }} </strong>\r\n      <br><br>\r\n      <label> Type de contrat {{ columns.typeDeContrat.title }}  :               </label><strong> {{ data.typeDeContrat }} </strong>\r\n      <br><br>\r\n      <label> T\u00E9l par d\u00E9fault {{ columns.numeroDeTelephoneParDefaut.title }}  :   </label><strong> {{ data.numeroDeTelephoneParDefaut }} </strong>\r\n      <br><br>\r\n      <label> Email par d\u00E9fault {{ columns.adresseEmailParDefaut.title }}  :      </label><strong> {{ data.adresseEmailParDefaut }} </strong>\r\n      <br><br>\r\n      <label> Soci\u00E9t\u00E9 de  d'appartenace {{ columns.societeDAppartenance.title }}  :</label><strong> {{ data.societeDAppartenance }} </strong>\r\n      <br><br>\r\n      <label> Handicap {{ columns.handicap.title }}   :                           </label><strong> {{ data.handicap }}</strong>\r\n      <br><br>\r\n      <!-- <label> Contactd'urgence {{ columns.nomPersonneEnCasDurgence.title }}      </label><strong> {{ data.nomPersonneEnCasDurgence }} </strong> -->\r\n      <label> Contactd'urgence  :  </label><strong> {{ data.nomPersonneEnCasDurgence }} </strong>\r\n      <br><br>\r\n\r\n    </ng-template>\r\n\r\n\r\n    <ng2-smart-table [(settings)]=\"settings\" [source]=\"source\" (deleteConfirm)=\"onDeleteConfirm($event)\"\r\n      (editConfirm)=\"onSaveConfirm($event)\" (createConfirm)=\"onCreateConfirm($event)\"\r\n      (rowHover)=\"sourieSurLigne($event)\" (custom)=\"onCustomAction($event)\" (userRowSelect)=\"onCustomAction($event)\">\r\n    </ng2-smart-table>\r\n\r\n  </nb-card-body>\r\n\r\n</nb-card>\r\n"
+            template: "<nb-card>\r\n  <nb-card-header>\r\n    <button nbButton shape=\"semi-round\" status=\"info\" (click)=\"savePreferences()\">\r\n      Sauvegarder mes pr\u00E9f\u00E9rences\r\n    </button>\r\n    <ng-content></ng-content>\r\n    <br />\r\n    <br />\r\n    <div class=\"vc-accordion\">\r\n      <nb-accordion multi>\r\n        <nb-accordion-item>\r\n          <nb-accordion-item-header>\r\n            Mes Pr\u00E9ferences\r\n          </nb-accordion-item-header>\r\n          <nb-accordion-item-body>\r\n            <nb-card>\r\n              <nb-card-header>S\u00E9lection des colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <nb-select cdkDropList multiple placeholder=\"S\u00E9lection Multiple \" class=\"columns-selection\"\r\n                  (selectedChange)=\"selectColomns($event)\" [(selected)]=\"selectedItem\" shape=\"round\" size=\"small\">\r\n                  <nb-select-label>\r\n                    S\u00E9lectioner les colonnes \u00E0 afficher\r\n                  </nb-select-label>\r\n                  <nb-option *ngFor=\"let col of columns | keyvalue\" value=\"{{ col.key }}\" [disabled]=\"\r\n                      selectedItem.length > 10 && !selectedItem.includes(col.key)\">\r\n                    {{ col.value.title }}\r\n                  </nb-option>\r\n                </nb-select>\r\n              </nb-card-body>\r\n            </nb-card>\r\n            <nb-card>\r\n              <nb-card-header>Tri des colonnes</nb-card-header>\r\n              <nb-card-body>\r\n                <div cdkDropList cdkDropListOrientation=\"horizontal\" class=\"example-list\"\r\n                  (cdkDropListDropped)=\"drop($event)\">\r\n                  <div class=\"example-box\" *ngFor=\"let item of columnsArrayOfObjects\" cdkDrag>\r\n                    {{ item.title }}\r\n                  </div>\r\n                </div>\r\n              </nb-card-body>\r\n            </nb-card>\r\n          </nb-accordion-item-body>\r\n        </nb-accordion-item>\r\n      </nb-accordion>\r\n    </div>\r\n  </nb-card-header>\r\n  <nb-card-body>\r\n    <ng2-smart-table [(settings)]=\"settings\" [source]=\"source\" (deleteConfirm)=\"onDeleteConfirm($event)\"\r\n      (editConfirm)=\"onSaveConfirm($event)\" (createConfirm)=\"onCreateConfirm($event)\"\r\n      (rowHover)=\"sourieSurLigne($event)\" (custom)=\"onCustomAction($event)\" (userRowSelect)=\"onCustomAction($event)\">\r\n    </ng2-smart-table>\r\n  </nb-card-body>\r\n</nb-card>\r\n"
             // changeDetection: ChangeDetectionStrategy.OnPush,
             ,
-            styles: ["nb-card{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.search-input{width:100%;display:block;margin-bottom:1rem;margin-right:1rem}.columns-selection{float:center;display:block;width:90%;margin-bottom:1%}.vc-accordion{width:100%;height:auto;clear:both}button{margin:1rem}.example-list{width:100%;max-width:100%;border:1px solid #ccc;min-height:60px;display:flex;flex-direction:row;background:#fff;border-radius:4px;overflow:hidden}.example-box{padding:20px 10px;border-right:1px solid #ccc;color:rgba(0,0,0,.87);display:flex;flex-direction:row;align-items:center;justify-content:center;box-sizing:border-box;cursor:move;background:#fff;font-size:14px;flex-grow:1;flex-basis:0}.cdk-drag-preview{box-sizing:border-box;border-radius:4px;box-shadow:0 5px 5px -3px rgba(0,0,0,.2),0 8px 10px 1px rgba(0,0,0,.14),0 3px 14px 2px rgba(0,0,0,.12)}.cdk-drag-placeholder{opacity:0}.cdk-drag-animating{transition:transform 250ms cubic-bezier(0,0,.2,1);transition:transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)}.example-box:last-child{border:none}.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder){transition:transform 250ms cubic-bezier(0,0,.2,1);transition:transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)}"]
+            styles: ["nb-card{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.search-input{width:100%;display:block;margin-bottom:1rem;margin-right:1rem}.columns-selection{float:center;display:block;width:90%;margin-bottom:1%}.vc-accordion{width:100%;height:auto;clear:both}button{margin:1rem}.example-list{width:100%;max-width:100%;border:1px solid #ccc;min-height:60px;display:flex;flex-direction:row;background:#fff;border-radius:4px;overflow:hidden}.example-box{padding:20px 10px;border-right:1px solid #ccc;color:rgba(0,0,0,.87);display:flex;flex-direction:row;align-items:center;justify-content:center;box-sizing:border-box;cursor:move;background:#fff;font-size:14px;flex-grow:1;flex-basis:0}.cdk-drag-preview{box-sizing:border-box;border-radius:4px;box-shadow:0 5px 5px -3px rgba(0,0,0,.2),0 8px 10px 1px rgba(0,0,0,.14),0 3px 14px 2px rgba(0,0,0,.12)}.cdk-drag-placeholder{opacity:0}.cdk-drag-animating{transition:transform 250ms cubic-bezier(0,0,.2,1);transition:transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)}.example-box:last-child{border:none}.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder){transition:transform 250ms cubic-bezier(0,0,.2,1);transition:transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)}.action-column{position:absolute;top:.2em;right:.2em}::ng-deep tr td.ng2-smart-actions{height:100%}::ng-deep tr td.ng2-smart-actions a.ng2-smart-action-custom-custom{width:50%!important;float:left}::ng-deep tr.consulterModifier i.nb-plus{display:none}::ng-deep tr.creerConsulter i.nb-edit{display:none}::ng-deep tr.creer i.nb-edit{display:none}::ng-deep tr.creer i.nb-search{display:none}"]
         }),
         __metadata("design:paramtypes", [SmartTableService,
             ComponentFactoryResolver,
@@ -1617,12 +1681,13 @@ var TablesModule = /** @class */ (function () {
                 NbLayoutModule,
                 NbSelectModule,
                 NbCheckboxModule,
-                NbAccordionModule
+                NbAccordionModule,
+                NbWindowModule,
             ],
             providers: [SmartTableService],
             declarations: __spread(routedComponents, [CustomRenderComponent]),
             entryComponents: [
-                CustomRenderComponent
+                CustomRenderComponent, NbWindowComponent
             ],
             exports: [SmartTableComponent]
         })

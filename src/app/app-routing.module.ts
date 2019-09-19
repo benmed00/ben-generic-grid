@@ -1,7 +1,6 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { AppComponent } from './app.component';
-import { DossierCollaborateurComponent } from './dossier-collaborateur/dossier-collaborateur.component';
+import { NgModule } from "@angular/core";
+import { Routes, RouterModule } from "@angular/router";
+import { AppComponent } from "./app.component";
 
 const routes: Routes = [
   {
@@ -15,20 +14,13 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'displayUser',
-    component: DossierCollaborateurComponent,
-  },
-  {
-    path: 'displayUser/2/1',
-    redirectTo: '/displayUser'  },
-  {
-    path: '**',
-    component: DossierCollaborateurComponent,
-  },
+    path: "displayUser/2/1",
+    redirectTo: "/displayUser"
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

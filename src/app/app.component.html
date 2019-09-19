@@ -1,26 +1,60 @@
-
-
 <nb-layout>
   <nb-layout-column>
 
     <nb-tabset fullWidth (changeTab)="onChangedTab($event)">
-      <nb-tab tabTitle="Liste Collaborateurs"
-              badgeText="new"
-              badgeStatus="danger"
-              [active]= listActive >
-        <generic-datagrid  *ngIf="settings" [datafromServer]="data" [config]="settings" (idCollaborateur)="getIdCollaborateur($event)"></generic-datagrid>
-      </nb-tab>
-      <nb-tab tabTitle="Dossier Collaborateur"
-              badgeText="12"
-              badgePosition="bottom right"
-              badgeStatus="warning"
-              [active]= dossierActive >
-        <h3><strong>Dossier Collaborateur orders</strong></h3>
-        <app-dossier-collaborateur></app-dossier-collaborateur>
+      <nb-tab tabTitle="Liste Collaborateurs" badgeText="new" badgeStatus="danger" [active]=listActive>
 
-        idcollaborateur : {{ idcollaborateur }}
+        <generic-datagrid
+          *ngIf="settings"
+          [datafromServer]="data"
+          [config]="settings"
+          (dataEvent)="getdataEvent($event)"
+          (eventPreference)="getPreferenceEvent($event)">
+
+          <!-- <button nbButton shape="semi-round" status="info" (click)="savePreferences()">Sauvegarder Preferences</button> -->
+
+        </generic-datagrid>
+
+      </nb-tab>
+      <nb-tab tabTitle="Dossier Collaborateur" badgeText="12" badgePosition="bottom right" badgeStatus="warning"
+        [active]=dossierActive>
+        <h3><strong> Dossier Collaborateur </strong></h3>
+
+        <!-- idUser : {{ userData.data | json }} -->
+
       </nb-tab>
     </nb-tabset>
+
+    <ng-template #contentTemplate let-data>
+      <div align="right" style="margin: 1%"><img src="{{data.photo}}" alt=" " width="100px" ></div>
+      <h2> {{ data.nom === 'undefined' ?  " -- " : data.nom  }} {{ data?.prenom1 === 'undefined' ?  " -- " : data?.prenom1}} </h2>
+      <strong> {{ columns?.dateDeNaissance?.title || "--"  }} :
+        {{ data?.dateDeNaissance === 'undefined' ?  " -- " : data?.dateDeNaissance }}</strong>
+      <p> Née le <strong> {{ data?.dateDeNaissance === 'undefined' ?  " -- " : data?.dateDeNaissance}}</strong> à <strong> {{ data?.paysDeNaissance === 'undefined' ?  " -- " : data?.paysDeNaissance}}</strong></p>
+      <label> {{ columns?.genre?.title || " -- " }} : </label>
+      <strong> {{ data?.genre  === 'undefined' ?  " -- " : data?.genre}} </strong>
+      <br><br>
+      <label> {{ columns?.fonctionOfficielle?.title || " -- " }} : </label>
+      <strong>{{ data?.fonctionOfficielle === 'undefined' ?  " -- " : data?.fonctionOfficielle}} </strong>
+      <br><br>
+      <label> {{ columns?.typeDeContrat?.title || " -- " }} : </label>
+      <strong>{{ data?.typeDeContrat  === 'undefined' ?  " -- " : data?.typeDeContrat}} </strong>
+      <br><br>
+      <label> {{ columns?.numeroDeTelephoneParDefaut?.title || " -- " }} : </label>
+      <strong>{{ data?.numeroDeTelephoneParDefaut  === 'undefined' ?  " -- " : data?.numeroDeTelephoneParDefaut}} </strong>
+      <br><br>
+      <label> {{ columns?.adresseEmailParDefaut?.title || " -- " }} : </label>
+      <strong>{{ data?.adresseEmailParDefaut  === 'undefined' ?  " -- " : data?.adresseEmailParDefaut}} </strong>
+      <br><br>
+      <label> {{ columns?.societeDAppartenance?.title || " -- " }} :</label><strong>
+        {{ data?.societeDAppartenance  === 'undefined' ?  " -- " : data?.societeDAppartenance}} </strong>
+      <br><br>
+      <label> {{ columns?.handicap?.title || "-- " }} : </label><strong> {{ data?.handicap  === 'undefined' ?  " -- " : data?.handicap}}</strong>
+      <br><br>
+      <label> {{ columns?.nomPersonneEnCasDurgence?.title || " -- " }} : </label>
+      <strong> {{ data?.nomPersonneEnCasDurgence === 'undefined' ?  " -- " : data?.nomPersonneEnCasDurgence}} </strong>
+      <br><br>
+    </ng-template>
 
     <!-- <generic-datagrid  *ngIf="settings" [datafromServer]="data" [config]="settings"></generic-datagrid> -->
     <!-- <generic-datagrid [datafromServer]="data" [config]="settings"></generic-datagrid> -->

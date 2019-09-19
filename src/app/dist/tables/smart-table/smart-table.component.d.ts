@@ -34,7 +34,9 @@ export declare class SmartTableComponent implements OnInit, OnDestroy, OnChanges
     selectedItem2: string[];
     panelOpenState: boolean;
     selectedSetting: any[];
-    idCollaborateur: EventEmitter<string>;
+    dataEvent: EventEmitter<any>;
+    ligneData: EventEmitter<any>;
+    eventPreference: EventEmitter<any>;
     contentTemplate: TemplateRef<any>;
     source: LocalDataSource;
     constructor(service: SmartTableService, componentFactoryResolver: ComponentFactoryResolver, http: HttpClient, windowService: NbWindowService, router: Router);
